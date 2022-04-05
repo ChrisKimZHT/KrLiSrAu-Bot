@@ -1,14 +1,14 @@
 import datetime
 
 current_version = "2.6"
-next_version = "[UNDEFINED]"
+next_version = "2.7"
 current_version_end = "2022-05-11 06:00"
 next_version_start = "2022-05-11 11:00"
 current_wish_end = "2022-04-19 17:59"
 next_wish_start = "2022-04-19 18:00"
 current_bp_end = "2022-05-09 03:59"
 next_bp_start = "2022-05-11 11:00"
-next_sa_start = "2022-04-01 04:00"
+next_sa_start = "2022-04-16 04:00"
 
 
 def gsupd():
