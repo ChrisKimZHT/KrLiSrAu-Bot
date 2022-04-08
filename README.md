@@ -3,4 +3,5 @@
 
 因为才开始学习 Python，这是用来练习的项目，并且只是给自己群友玩玩，所以写的很垃圾，大佬勿笑。
 
-文档链接：https://diona.cc/klsahelp.html（只是我懒得复制过来了）
+[跳转到使用文档](https://diona.cc/klsahelp.html)（只是我懒得复制过来了）
+
