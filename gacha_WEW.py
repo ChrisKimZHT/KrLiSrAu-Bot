@@ -202,21 +202,32 @@ def result_selector(star, up, typ):
 
 
 def wew():
-    result_list = []
-    for i in range(0,10):
-        # temp = [5, 0, 0]
+    five_star_character_list = []  # 五星角色列表
+    five_star_weapon_list = []  # 五星武器列表
+    four_star_character_list = []  # 四型角色列表
+    four_star_weapon_list = []  # 四星武器列表
+    three_star_list = []  # 三星武器列表
+    for i in range(0, 10):
         temp = star_selector()  # 星数选择器返回列表
         star = temp[0]  # 星数
-        four_star_order = temp[1]  # 4星所在序号
-        five_star_order = temp[2]  # 5星所在序号
         up = up_selector(star)  # 是否UP
         typ = None
         if star == 4:
-            typ = four_star_type_selector()  # 是否为武器
-        result = result_selector(star, up, typ)
-        # 结果字符串拼接
-        result_list.append(result)
-    return result_list
+            typ = four_star_type_selector()  # 是否为角色
+        result = result_selector(star, up, typ)  # 获取具体结果
+        # 结果保存
+        if star == 3:
+            three_star_list.append([result, -1])
+        elif star == 4 and typ:
+            four_star_character_list.append([result, temp[1]])
+        elif star == 4:
+            four_star_weapon_list.append([result, temp[1]])
+        elif star == 5 and typ:
+            five_star_character_list.append([result, temp[2]])
+        elif star == 5:
+            five_star_weapon_list.append([result, temp[2]])
+    # 返回结果 高星级角色＞高星级武器＞低星级角色＞低星级武器＞实际抽取顺序
+    return five_star_character_list + five_star_weapon_list + four_star_character_list + four_star_weapon_list + three_star_list
 
 
 def ep(x):
@@ -227,14 +238,21 @@ def ep(x):
         is_ep = False
         set_ep = ""
         cnt_ep = -1
-        return "定轨：取消"
+        return "【抽卡模拟】定轨：取消"
     elif x == 1:
         is_ep = True
         set_ep = five_star_up[0]
         cnt_ep = 0
-        return f"定轨：{set_ep}"
+        return f"【抽卡模拟】定轨：{set_ep}"
     elif x == 2:
         is_ep = True
         set_ep = five_star_up[1]
         cnt_ep = 0
-        return f"定轨：{set_ep}"
+        return f"【抽卡模拟】定轨：{set_ep}"
+
+
+def get_epinfo():
+    if is_ep:
+        return [set_ep, cnt_ep]
+    else:
+        return ["无", "无"]

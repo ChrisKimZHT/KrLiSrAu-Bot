@@ -1,8 +1,7 @@
 from re import match
 from func_moyu import func_moyu
 from func_help import func_help
-from func_gacha import func_gacha
-from func_ep import func_ep
+from func_gacha import func_gacha, func_ep
 from func_gsupd import gsupd
 from func_cee import cee
 from send import send_user, send_group, send_group_at

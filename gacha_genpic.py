@@ -1,7 +1,5 @@
 import datetime
-from io import BytesIO
-from PIL import Image
-import base64
+from PIL import Image, ImageDraw, ImageFont
 
 # 图片素材加载
 # 物品字典
@@ -125,12 +123,14 @@ grade = {
 
 
 # 图片生成
-def gen_pic(result_list):
-    result_list = sort_res(result_list)
+def gen_pic(wish_typ, result_list, ep_info=None):
+    # 函数启动时间
+    start_time = datetime.datetime.now()
+    # 获取背景
     result_pic = page_background.copy()
     # 将十个结果依次嵌入页面背景
     for i in range(0, 10):
-        res = result_list[i]
+        res = result_list[i][0]
         # 嵌入物品边框
         if item_dict[res][1] == 3:
             result_pic.paste(item_shadow_3, (6 + 95 * i, -20), item_shadow_3)
@@ -142,7 +142,7 @@ def gen_pic(result_list):
         result_pic.paste(item_background, (53 + 95 * i, 100), item_background)
         result_pic.paste(item_background_2, (53 + 95 * i, 100), item_background_2)
     for i in range(0, 10):
-        res = result_list[i]
+        res = result_list[i][0]
         if item_dict[res][2]:
             # 获取角色图片
             item = item_dict[res][0]
@@ -171,31 +171,36 @@ def gen_pic(result_list):
             # 嵌入武器星级
             star = grade[item_dict[res][1]]
             result_pic.paste(star, (64 + 95 * i, 438), star)
+    # 字体
+    font = ImageFont.truetype("./resource/font/zh-cn.ttf", 20)
+    # 新建文字图层
+    text_overlay = Image.new('RGBA', result_pic.size, (255, 255, 255, 0))
+    text_draw = ImageDraw.Draw(text_overlay)
+    # 添加顶栏文字
+    if wish_typ == 1:
+        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 角色活动祈愿", font=font)
+    elif wish_typ == 2:
+        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 角色活动祈愿-2", font=font)
+    elif wish_typ == 3:
+        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 武器活动祈愿  定轨: {ep_info[0]}  命定值: {ep_info[1]} ", font=font)
+    else:
+        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 常驻祈愿", font=font)
+    # 添加底栏文字
+    count_text = "抽数统计："
+    for i in range(0, 10):
+        # 如果是三星就停止
+        if item_dict[result_list[i][0]][1] == 3:
+            break
+        # 添加抽数
+        count_text += f"{result_list[i][0]}[{result_list[i][1]}] "
+    text_draw.text((10, 568), count_text, font=font)
+    # 添加KrLiSrAu水印
+    text_draw.text((565, 568), "https://github.com/ChrisKimZHT/KrLiSrAu-Bot", font=font)
+    # 合成文字图层
+    result_pic = Image.alpha_composite(result_pic, text_overlay)
     # 文件名
-    file_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".png"
+    file_name = start_time.strftime('%Y-%m-%d-%H-%M-%S') + ".png"
+    # 保存文件
     result_pic.save(f"./temp/{file_name}")
+    # 返回文件名
     return file_name
-
-
-# 结果排序
-def sort_res(result_list):
-    sorted_result_list = []
-    for res in result_list:
-        if item_dict[res][1] == 5 and item_dict[res][2]:
-            sorted_result_list.append(res)
-            result_list.remove(res)
-    for res in result_list:
-        if item_dict[res][1] == 5:
-            sorted_result_list.append(res)
-            result_list.remove(res)
-    for res in result_list:
-        if item_dict[res][1] == 4 and item_dict[res][2]:
-            sorted_result_list.append(res)
-            result_list.remove(res)
-    for res in result_list:
-        if item_dict[res][1] == 4:
-            sorted_result_list.append(res)
-            result_list.remove(res)
-    for res in result_list:
-        sorted_result_list.append(res)
-    return sorted_result_list

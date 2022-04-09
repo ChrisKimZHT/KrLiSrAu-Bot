@@ -1,3 +1,4 @@
+import datetime
 from random import randint
 
 
@@ -173,15 +174,26 @@ def result_selector(star, up, gacha_typ, typ):
 
 
 def cew(gacha_typ):
-    result_list = []
+    five_star_list = []  # 五星角色列表
+    four_star_character_list = []  # 四型角色列表
+    four_star_weapon_list = []  # 四星武器列表
+    three_star_list = []  # 三星武器列表
     for i in range(0, 10):
         temp = star_selector()  # 星数选择器返回列表
         star = temp[0]  # 星数
         up = up_selector(star)  # 是否UP
         typ = None
         if star == 4 and not up:
-            typ = four_star_type_selector()  # 是否为武器
-        result = result_selector(star, up, gacha_typ, typ)
-        # 结果字符串拼接
-        result_list.append(result)
-    return result_list
+            typ = four_star_type_selector()  # 是否为角色
+        result = result_selector(star, up, gacha_typ, typ)  # 获取具体结果
+        # 结果保存
+        if star == 3:
+            three_star_list.append([result, -1])
+        elif star == 4 and typ:
+            four_star_character_list.append([result, temp[1]])
+        elif star == 4:
+            four_star_weapon_list.append([result, temp[1]])
+        elif star == 5:
+            five_star_list.append([result, temp[2]])
+    # 返回结果 高星级角色＞高星级武器＞低星级角色＞低星级武器＞实际抽取顺序
+    return five_star_list + four_star_character_list + four_star_weapon_list + three_star_list
