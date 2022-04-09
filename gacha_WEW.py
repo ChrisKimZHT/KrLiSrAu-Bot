@@ -202,8 +202,7 @@ def result_selector(star, up, typ):
 
 
 def wew():
-    five_star_character_list = []  # 五星角色列表
-    five_star_weapon_list = []  # 五星武器列表
+    five_star_list = []  # 五星武器列表
     four_star_character_list = []  # 四型角色列表
     four_star_weapon_list = []  # 四星武器列表
     three_star_list = []  # 三星武器列表
@@ -222,12 +221,10 @@ def wew():
             four_star_character_list.append([result, temp[1]])
         elif star == 4:
             four_star_weapon_list.append([result, temp[1]])
-        elif star == 5 and typ:
-            five_star_character_list.append([result, temp[2]])
         elif star == 5:
-            five_star_weapon_list.append([result, temp[2]])
+            five_star_list.append([result, temp[2]])
     # 返回结果 高星级角色＞高星级武器＞低星级角色＞低星级武器＞实际抽取顺序
-    return five_star_character_list + five_star_weapon_list + four_star_character_list + four_star_weapon_list + three_star_list
+    return five_star_list + four_star_character_list + four_star_weapon_list + three_star_list
 
 
 def ep(x):

@@ -90,6 +90,7 @@ page_background = Image.open("./resource/misc/background.jpg").convert(mode="RGB
 # 物品背景
 item_background = Image.open("./resource/misc/bg.png").convert(mode="RGBA").resize((95, 390))
 item_background_2 = Image.open("./resource/misc/bg2.png").convert(mode="RGBA").resize((95, 390))
+item_background_3 = Image.open("./resource/misc/bg3.png").convert(mode="RGBA").resize((95, 338))
 # 物品边框
 item_shadow_3 = Image.open("./resource/misc/shadow-3.png").convert(mode="RGBA").resize((186, 588))
 item_shadow_4 = Image.open("./resource/misc/shadow-4.png").convert(mode="RGBA").resize((186, 588))
@@ -138,11 +139,14 @@ def gen_pic(wish_typ, result_list, ep_info=None):
             result_pic.paste(item_shadow_4, (6 + 95 * i, -20), item_shadow_4)
         elif item_dict[res][1] == 5:
             result_pic.paste(item_shadow_5, (6 + 95 * i, -20), item_shadow_5)
+    for i in range(0, 10):
+        res = result_list[i][0]
         # 嵌入物品背景
         result_pic.paste(item_background, (53 + 95 * i, 100), item_background)
         result_pic.paste(item_background_2, (53 + 95 * i, 100), item_background_2)
-    for i in range(0, 10):
-        res = result_list[i][0]
+        if item_dict[res][1] == 5:
+            result_pic.paste(item_background_3, (53 + 95 * i, 128), item_background_3)
+        # 嵌入物品图片
         if item_dict[res][2]:
             # 获取角色图片
             item = item_dict[res][0]
@@ -182,11 +186,12 @@ def gen_pic(wish_typ, result_list, ep_info=None):
     elif wish_typ == 2:
         text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 角色活动祈愿-2", font=font)
     elif wish_typ == 3:
-        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 武器活动祈愿  定轨: {ep_info[0]}  命定值: {ep_info[1]} ", font=font)
+        text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 武器活动祈愿  "
+                                 f"定轨: {ep_info[0]}  命定值: {ep_info[1]} ", font=font)
     else:
         text_draw.text((10, 10), f"{start_time.strftime('%Y/%m/%d %H:%M:%S')} 常驻祈愿", font=font)
     # 添加底栏文字
-    count_text = "抽数统计："
+    count_text = ""
     for i in range(0, 10):
         # 如果是三星就停止
         if item_dict[result_list[i][0]][1] == 3:

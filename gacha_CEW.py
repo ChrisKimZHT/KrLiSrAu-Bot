@@ -189,7 +189,7 @@ def cew(gacha_typ):
         # 结果保存
         if star == 3:
             three_star_list.append([result, -1])
-        elif star == 4 and typ:
+        elif star == 4 and (up or typ):
             four_star_character_list.append([result, temp[1]])
         elif star == 4:
             four_star_weapon_list.append([result, temp[1]])
