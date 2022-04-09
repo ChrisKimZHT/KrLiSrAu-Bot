@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 from PIL import Image
 import base64
@@ -170,11 +171,10 @@ def gen_pic(result_list):
             # 嵌入武器星级
             star = grade[item_dict[res][1]]
             result_pic.paste(star, (64 + 95 * i, 438), star)
-    buffer = BytesIO()
-    result_pic.save(buffer, format="PNG")
-    buffer_byte = buffer.getvalue()
-    base64_pic = base64.b64encode(buffer_byte).decode("ascii")
-    return base64_pic
+    # 文件名
+    file_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".png"
+    result_pic.save(f"./temp/{file_name}")
+    return file_name
 
 
 # 结果排序
