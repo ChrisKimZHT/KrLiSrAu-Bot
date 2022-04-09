@@ -180,27 +180,16 @@ def result_selector(star, typ):
 
 
 def sw():
-    string = ""
-    temp = star_selector()  # 星数选择器返回列表
-    star = temp[0]  # 星数
-    four_star_order = temp[1]  # 4星所在序号
-    five_star_order = temp[2]  # 5星所在序号
-    typ = None
-    if star == 4:
-        typ = four_star_type_selector()  # 是否为武器
-    elif star == 5:
-        typ = five_star_type_selector()
-    result = result_selector(star, typ)
-    # 结果字符串拼接
-    if star == 3:
-        string += "★★★☆☆ "
-    elif star == 4:
-        string += "★★★★☆ "
-    elif star == 5:
-        string += "★★★★★ "
-    string += result
-    if star == 4:
-        string += f" #{four_star_order}"
-    elif star == 5:
-        string += f" #{five_star_order}"
-    return string
+    result_list = []
+    for i in range(0, 10):
+        temp = star_selector()  # 星数选择器返回列表
+        star = temp[0]  # 星数
+        typ = None
+        if star == 4:
+            typ = four_star_type_selector()  # 是否为武器
+        elif star == 5:
+            typ = five_star_type_selector()
+        result = result_selector(star, typ)
+        # 结果列表
+        result_list.append(result)
+    return result_list
