@@ -125,6 +125,7 @@ grade = {
 
 # 图片生成
 def gen_pic(result_list):
+    result_list = sort_res(result_list)
     result_pic = page_background.copy()
     # 将十个结果依次嵌入页面背景
     for i in range(0, 10):
@@ -174,3 +175,27 @@ def gen_pic(result_list):
     buffer_byte = buffer.getvalue()
     base64_pic = base64.b64encode(buffer_byte).decode("ascii")
     return base64_pic
+
+
+# 结果排序
+def sort_res(result_list):
+    sorted_result_list = []
+    for res in result_list:
+        if item_dict[res][1] == 5 and item_dict[res][2]:
+            sorted_result_list.append(res)
+            result_list.remove(res)
+    for res in result_list:
+        if item_dict[res][1] == 5:
+            sorted_result_list.append(res)
+            result_list.remove(res)
+    for res in result_list:
+        if item_dict[res][1] == 4 and item_dict[res][2]:
+            sorted_result_list.append(res)
+            result_list.remove(res)
+    for res in result_list:
+        if item_dict[res][1] == 4:
+            sorted_result_list.append(res)
+            result_list.remove(res)
+    for res in result_list:
+        sorted_result_list.append(res)
+    return sorted_result_list
