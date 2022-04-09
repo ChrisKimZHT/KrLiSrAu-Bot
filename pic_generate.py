@@ -1,4 +1,6 @@
+from io import BytesIO
 from PIL import Image
+import base64
 
 # 图片素材加载
 # 物品字典
@@ -157,7 +159,7 @@ def gen_pic(result_list):
             # 获取武器图片
             item = item_dict[result_list[i]][0].resize((95, 304))
             # 嵌入武器阴影
-            result_pic.paste(Image.new("RGB", item.size, (47, 51, 50)), (58 + 95 * i, 150), item)
+            result_pic.paste(Image.new("RGBA", item.size, (47, 51, 50)), (58 + 95 * i, 150), item)
             # 嵌入武器立绘
             result_pic.paste(item, (52 + 95 * i, 145), item)
             # 嵌入武器类型
@@ -166,4 +168,8 @@ def gen_pic(result_list):
             # 嵌入武器星级
             star = grade[item_dict[result_list[i]][1]].resize((75, 20))
             result_pic.paste(star, (64 + 95 * i, 438), star)
-    return result_pic
+    buffer = BytesIO()
+    result_pic.save(buffer, format="PNG")
+    buffer_byte = buffer.getvalue()
+    base64_pic = base64.b64encode(buffer_byte).decode("ascii")
+    return base64_pic
