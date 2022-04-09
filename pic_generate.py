@@ -1,12 +1,21 @@
 from PIL import Image
 
+# 图片素材加载
 # 物品字典
 item_dict = {
+    # 限定五星角色
+    "神里绫人": [Image.open("./resource/character/神里绫人.png").convert(mode="RGBA"), 5, True, "水"],
+    "温迪": [Image.open("./resource/character/温迪.png").convert(mode="RGBA"), 5, True, "风"],
+    # 限定五星武器
+    "波乱月白经津": [Image.open("./resource/weapon/波乱月白经津.png").convert(mode="RGBA"), 5, False, "单手剑"],
+    "终末嗟叹之诗": [Image.open("./resource/weapon/终末嗟叹之诗.png").convert(mode="RGBA"), 5, False, "弓箭"],
+    # 常驻五星角色
     "刻晴": [Image.open("./resource/character/刻晴.png").convert(mode="RGBA"), 5, True, "雷"],
     "莫娜": [Image.open("./resource/character/莫娜.png").convert(mode="RGBA"), 5, True, "水"],
     "七七": [Image.open("./resource/character/七七.png").convert(mode="RGBA"), 5, True, "冰"],
     "迪卢克": [Image.open("./resource/character/迪卢克.png").convert(mode="RGBA"), 5, True, "火"],
     "琴": [Image.open("./resource/character/琴.png").convert(mode="RGBA"), 5, True, "风"],
+    # 常驻五星武器
     "阿莫斯之弓": [Image.open("./resource/weapon/阿莫斯之弓.png").convert(mode="RGBA"), 5, False, "弓箭"],
     "天空之翼": [Image.open("./resource/weapon/天空之翼.png").convert(mode="RGBA"), 5, False, "弓箭"],
     "四风原典": [Image.open("./resource/weapon/四风原典.png").convert(mode="RGBA"), 5, False, "法器"],
@@ -17,6 +26,7 @@ item_dict = {
     "天空之傲": [Image.open("./resource/weapon/天空之傲.png").convert(mode="RGBA"), 5, False, "双手剑"],
     "天空之刃": [Image.open("./resource/weapon/天空之刃.png").convert(mode="RGBA"), 5, False, "单手剑"],
     "风鹰剑": [Image.open("./resource/weapon/风鹰剑.png").convert(mode="RGBA"), 5, False, "单手剑"],
+    # 常驻四星角色
     "云堇": [Image.open("./resource/character/云堇.png").convert(mode="RGBA"), 4, True, "岩"],
     "九条裟罗": [Image.open("./resource/character/九条裟罗.png").convert(mode="RGBA"), 4, True, "雷"],
     "五郎": [Image.open("./resource/character/五郎.png").convert(mode="RGBA"), 4, True, "岩"],
@@ -40,6 +50,7 @@ item_dict = {
     "凯亚": [Image.open("./resource/character/凯亚.png").convert(mode="RGBA"), 4, True, "冰"],
     "芭芭拉": [Image.open("./resource/character/芭芭拉.png").convert(mode="RGBA"), 4, True, "水"],
     "丽莎": [Image.open("./resource/character/丽莎.png").convert(mode="RGBA"), 4, True, "雷"],
+    # 常驻四星武器
     "弓藏": [Image.open("./resource/weapon/弓藏.png").convert(mode="RGBA"), 4, False, "弓箭"],
     "祭礼弓": [Image.open("./resource/weapon/祭礼弓.png").convert(mode="RGBA"), 4, False, "弓箭"],
     "绝弦": [Image.open("./resource/weapon/绝弦.png").convert(mode="RGBA"), 4, False, "弓箭"],
@@ -58,6 +69,7 @@ item_dict = {
     "祭礼剑": [Image.open("./resource/weapon/祭礼剑.png").convert(mode="RGBA"), 4, False, "单手剑"],
     "笛剑": [Image.open("./resource/weapon/笛剑.png").convert(mode="RGBA"), 4, False, "单手剑"],
     "西风剑": [Image.open("./resource/weapon/西风剑.png").convert(mode="RGBA"), 4, False, "单手剑"],
+    # 三星武器
     "弹弓": [Image.open("./resource/weapon/弹弓.png").convert(mode="RGBA"), 3, False, "弓箭"],
     "神射手之誓": [Image.open("./resource/weapon/神射手之誓.png").convert(mode="RGBA"), 3, False, "弓箭"],
     "鸦羽弓": [Image.open("./resource/weapon/鸦羽弓.png").convert(mode="RGBA"), 3, False, "弓箭"],
@@ -109,8 +121,9 @@ grade = {
 }
 
 
+# 图片生成
 def gen_pic(result_list):
-    result_pic = page_background
+    result_pic = page_background.copy()
     # 将十个结果依次嵌入页面背景
     for i in range(0, 10):
         # 嵌入物品边框
@@ -129,7 +142,7 @@ def gen_pic(result_list):
             # 获取角色图片
             item = item_dict[result_list[i]][0].resize((120, 384))
             # 读入基础蒙版
-            mask = basic_character_mask
+            mask = basic_character_mask.copy()
             # 基础蒙版与角色立绘透明度合成
             mask = Image.composite(mask, Image.new("L", item.size, "black"), item.split()[-1].convert("L"))
             # 嵌入角色立绘

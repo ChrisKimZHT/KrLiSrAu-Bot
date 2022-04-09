@@ -202,30 +202,21 @@ def result_selector(star, up, typ):
 
 
 def wew():
-    string = ""
-    # temp = [5, 0, 0]
-    temp = star_selector()  # 星数选择器返回列表
-    star = temp[0]  # 星数
-    four_star_order = temp[1]  # 4星所在序号
-    five_star_order = temp[2]  # 5星所在序号
-    up = up_selector(star)  # 是否UP
-    typ = None
-    if star == 4:
-        typ = four_star_type_selector()  # 是否为武器
-    result = result_selector(star, up, typ)
-    # 结果字符串拼接
-    if star == 3:
-        string += "★★★☆☆ "
-    elif star == 4:
-        string += "★★★★☆ "
-    elif star == 5:
-        string += "★★★★★ "
-    string += result
-    if star == 4:
-        string += f" #{four_star_order}"
-    elif star == 5:
-        string += f" #{five_star_order} ${cnt_ep}"
-    return string
+    result_list = []
+    for i in range(0,10):
+        # temp = [5, 0, 0]
+        temp = star_selector()  # 星数选择器返回列表
+        star = temp[0]  # 星数
+        four_star_order = temp[1]  # 4星所在序号
+        five_star_order = temp[2]  # 5星所在序号
+        up = up_selector(star)  # 是否UP
+        typ = None
+        if star == 4:
+            typ = four_star_type_selector()  # 是否为武器
+        result = result_selector(star, up, typ)
+        # 结果字符串拼接
+        result_list.append(result)
+    return result_list
 
 
 def ep(x):
