@@ -1,2 +1,2 @@
 def func_help():
-    return "KLSA 帮助: https://diona.cc/klsahelp.html"
+    return "使用帮助: https://github.com/ChrisKimZHT/KrLiSrAu-Bot"
