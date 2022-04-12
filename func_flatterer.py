@@ -1,7 +1,8 @@
 import random
 
-with open("./resource/flatterer/flatterer_diary.txt") as file:
-    text = file.read().splitlines()
+file = open("./resource/flatterer/flatterer_diary.txt", encoding="UTF-8")
+text = file.read().splitlines()
+file.close()
 size = len(text)
 
 
