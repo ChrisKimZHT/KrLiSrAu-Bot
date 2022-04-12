@@ -9,7 +9,7 @@ last_run = datetime.datetime.now()
 cool_down = 4  # 冷却时间
 
 
-def func_gacha(typ):
+def gacha(typ):
     global last_run
     now = datetime.datetime.now()
     if (now - last_run).seconds >= cool_down:
@@ -29,5 +29,5 @@ def func_gacha(typ):
     return string
 
 
-def func_ep(typ):
+def ep(typ):
     return ep(typ)

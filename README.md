@@ -5,6 +5,8 @@
 
 抽卡素材来源：[GardenHamster/GenshinPray](https://github.com/GardenHamster/GenshinPray)
 
+舔狗日记来源：[hututu9/doglicking](https://github.com/hututu9/doglicking)
+
 ## 功能使用
 
 #### 摸鱼办
@@ -94,3 +96,16 @@
 >距离2022高考还有：  
 >59天14小时14分钟20秒  
 
+#### 舔狗日记
+
+**使用**
+
+- `.tg`
+- `.flatter`
+
+**结果**
+
+返回随机舔狗日记：
+
+> 【舔狗日记】  
+> 昨天我还是照常给你发了好多消息 今天你终于回了我五个字“烦不烦啊你” 你开始关心我觉不觉得烦了 我太感动了 受宠若惊的 不烦不烦 你天天骂我我都不会觉得你烦

@@ -2,7 +2,7 @@ import datetime
 from zhdate import ZhDate
 
 
-def func_moyu():
+def moyu():
     # 周末 元旦 春节 清明 劳动 端午 中秋 国庆
     dist = [0, 0, 0, 0, 0, 0, 0, 0]
     today = datetime.date.today()
