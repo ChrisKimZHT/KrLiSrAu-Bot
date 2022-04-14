@@ -176,7 +176,7 @@ def gen_pic(wish_typ, result_list, ep_info=None):
             star = grade[item_dict[res][1]]
             result_pic.paste(star, (64 + 95 * i, 438), star)
     # 字体
-    font = ImageFont.truetype("./resource/font/zh-cn.ttf", 20)
+    font = ImageFont.truetype("resource/gacha/font/zh-cn.ttf", 20)
     # 新建文字图层
     text_overlay = Image.new('RGBA', result_pic.size, (255, 255, 255, 0))
     text_draw = ImageDraw.Draw(text_overlay)
