@@ -2,7 +2,7 @@ import datetime
 import os
 from gacha_CEW import cew
 from gacha_SW import sw
-from gacha_WEW import wew, ep, get_epinfo
+from gacha_WEW import wew, set_ep, get_epinfo
 from gacha_genpic import gen_pic
 
 last_run = datetime.datetime.now()
@@ -30,4 +30,4 @@ def gacha(typ):
 
 
 def ep(typ):
-    return ep(typ)
+    return set_ep(typ)

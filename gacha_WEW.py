@@ -149,14 +149,14 @@ three_star = \
      "冷刃"]
 
 is_ep = False  # 是否定轨
-set_ep = ""  # 当前设置的定规
+cur_ep = ""  # 当前设置的定轨
 cnt_ep = -1  # 命定值
 
 
 # 结果选择器
 def result_selector(star, up, typ):
     global is_ep
-    global set_ep
+    global cur_ep
     global cnt_ep
     global last_four_star_weapon
     global last_four_star_character
@@ -182,11 +182,11 @@ def result_selector(star, up, typ):
         if up:
             res = five_star_up[randint(0, 1)]
             if is_ep:
-                if res == set_ep:
+                if res == cur_ep:
                     cnt_ep = 0
                 elif cnt_ep == 2:
                     cnt_ep = 0
-                    res = set_ep
+                    res = cur_ep
                 else:
                     cnt_ep += 1
             return res
@@ -195,7 +195,7 @@ def result_selector(star, up, typ):
             if is_ep:
                 if cnt_ep == 2:
                     cnt_ep = 0
-                    res = set_ep
+                    res = cur_ep
                 else:
                     cnt_ep += 1
             return res
@@ -227,29 +227,29 @@ def wew():
     return five_star_list + four_star_character_list + four_star_weapon_list + three_star_list
 
 
-def ep(x):
+def set_ep(x):
     global is_ep
-    global set_ep
+    global cur_ep
     global cnt_ep
     if x == 0:
         is_ep = False
-        set_ep = ""
+        cur_ep = ""
         cnt_ep = -1
         return "【抽卡模拟】定轨：取消"
     elif x == 1:
         is_ep = True
-        set_ep = five_star_up[0]
+        cur_ep = five_star_up[0]
         cnt_ep = 0
-        return f"【抽卡模拟】定轨：{set_ep}"
+        return f"【抽卡模拟】定轨：{cur_ep}"
     elif x == 2:
         is_ep = True
-        set_ep = five_star_up[1]
+        cur_ep = five_star_up[1]
         cnt_ep = 0
-        return f"【抽卡模拟】定轨：{set_ep}"
+        return f"【抽卡模拟】定轨：{cur_ep}"
 
 
 def get_epinfo():
     if is_ep:
-        return [set_ep, cnt_ep]
+        return [cur_ep, cnt_ep]
     else:
         return ["无", "无"]
