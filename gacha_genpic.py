@@ -5,9 +5,12 @@ from PIL import Image, ImageDraw, ImageFont
 # 物品字典
 item_dict = {
     # 限定五星角色
+    "神里绫华": [Image.open("resource/gacha/character/神里绫华.png").convert(mode="RGBA").resize((120, 384)), 5, True, "冰"],
     "神里绫人": [Image.open("resource/gacha/character/神里绫人.png").convert(mode="RGBA").resize((120, 384)), 5, True, "水"],
     "温迪": [Image.open("resource/gacha/character/温迪.png").convert(mode="RGBA").resize((120, 384)), 5, True, "风"],
     # 限定五星武器
+    "雾切之回光": [Image.open("resource/gacha/weapon/雾切之回光.png").convert(mode="RGBA").resize((95, 304)), 5, False, "单手剑"],
+    "无工之剑": [Image.open("resource/gacha/weapon/无工之剑.png").convert(mode="RGBA").resize((95, 304)), 5, False, "双手剑"],
     "波乱月白经津": [Image.open("resource/gacha/weapon/波乱月白经津.png").convert(mode="RGBA").resize((95, 304)), 5, False, "单手剑"],
     "终末嗟叹之诗": [Image.open("resource/gacha/weapon/终末嗟叹之诗.png").convert(mode="RGBA").resize((95, 304)), 5, False, "弓箭"],
     # 常驻五星角色
