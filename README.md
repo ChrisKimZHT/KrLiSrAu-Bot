@@ -60,7 +60,7 @@
 
 返回一次抽卡结果图片：
 
-<img src="https://assets.zouht.com/img/gacha-preview.png" alt="gacha-preview" style="zoom: 67%;" />
+<img src="https://assets.zouht.com/img/md/KrLiSrAu-Bot-README-01.png" alt="gacha-preview" style="zoom: 67%;" />
 
 #### 原神更新
 
