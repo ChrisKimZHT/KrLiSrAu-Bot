@@ -1,8 +1,15 @@
 import datetime
 from zhdate import ZhDate
+from nonebot import on_command, CommandSession
 
 
-def moyu():
+@on_command("moyu", aliases="摸鱼")
+async def moyu(session: CommandSession):
+    result = await get_result()
+    await session.send(result)
+
+
+async def get_result() -> str:
     # 周末 元旦 春节 清明 劳动 端午 中秋 国庆
     dist = [0, 0, 0, 0, 0, 0, 0, 0]
     today = datetime.date.today()

@@ -127,7 +127,7 @@ grade = {
 
 
 # 图片生成
-def gen_pic(wish_typ, result_list, ep_info=None):
+async def gen_pic(wish_typ, result_list, ep_info=None):
     # 函数启动时间
     start_time = datetime.datetime.now()
     # 获取背景
