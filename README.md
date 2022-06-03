@@ -1,5 +1,7 @@
 # KrLiSrAu-Bot
 
+**由于写得太烂，实在写不下去了，因此已改为只读仓库。**
+
 使用 [NoneBot](https://github.com/nonebot/nonebot) 框架编写的的 Python 机器人，名称叫氪锂锶金机器人（ChrisKim 的音译）
 
 因为才开始学习 Python，这是用来练习的项目，并且只是给自己群友玩玩，所以写的很垃圾，大佬勿笑。
