@@ -1,12 +1,14 @@
 import datetime
 from zhdate import ZhDate
-from nonebot import on_command, CommandSession
+from nonebot import on_command
+
+moyu = on_command("moyu", aliases={"摸鱼"}, priority=1)
 
 
-@on_command("moyu", aliases="摸鱼")
-async def moyu(session: CommandSession):
+@moyu.handle()
+async def handle_moyu():
     result = await get_result()
-    await session.send(result)
+    await moyu.finish(result)
 
 
 async def get_result() -> str:
@@ -20,33 +22,44 @@ async def get_result() -> str:
     if dist[0] == -1:
         dist[0] = 0
     # 元旦 1.1
-    dist[1] = (datetime.datetime.strptime(f"{today.year}-01-01", "%Y-%m-%d").date() - today).days
+    dist[1] = (datetime.datetime.strptime(
+        f"{today.year}-01-01", "%Y-%m-%d").date() - today).days
     if dist[1] < 0:
-        dist[1] = (datetime.datetime.strptime(f"{today.year + 1}-01-01", "%Y-%m-%d").date() - today).days
+        dist[1] = (datetime.datetime.strptime(
+            f"{today.year + 1}-01-01", "%Y-%m-%d").date() - today).days
     # 春节 CHN-1.1
     dist[2] = (ZhDate(today.year, 1, 1).to_datetime().date() - today).days
     if dist[2] < 0:
-        dist[2] = (ZhDate(today.year + 1, 1, 1).to_datetime().date() - today).days
+        dist[2] = (ZhDate(today.year + 1, 1,
+                          1).to_datetime().date() - today).days
     # 清明 4.5
-    dist[3] = (datetime.datetime.strptime(f"{today.year}-04-05", "%Y-%m-%d").date() - today).days
+    dist[3] = (datetime.datetime.strptime(
+        f"{today.year}-04-05", "%Y-%m-%d").date() - today).days
     if dist[3] < 0:
-        dist[3] = (datetime.datetime.strptime(f"{today.year + 1}-04-05", "%Y-%m-%d").date() - today).days
+        dist[3] = (datetime.datetime.strptime(
+            f"{today.year + 1}-04-05", "%Y-%m-%d").date() - today).days
     # 劳动 5.1
-    dist[4] = (datetime.datetime.strptime(f"{today.year}-05-01", "%Y-%m-%d").date() - today).days
+    dist[4] = (datetime.datetime.strptime(
+        f"{today.year}-05-01", "%Y-%m-%d").date() - today).days
     if dist[4] < 0:
-        dist[4] = (datetime.datetime.strptime(f"{today.year + 1}-05-01", "%Y-%m-%d").date() - today).days
+        dist[4] = (datetime.datetime.strptime(
+            f"{today.year + 1}-05-01", "%Y-%m-%d").date() - today).days
     # 端午 CHN-5.5
     dist[5] = (ZhDate(today.year, 5, 5).to_datetime().date() - today).days
     if dist[5] < 0:
-        dist[5] = (ZhDate(today.year + 1, 5, 5).to_datetime().date() - today).days
+        dist[5] = (ZhDate(today.year + 1, 5,
+                          5).to_datetime().date() - today).days
     # 中秋 CHN-8.15
     dist[6] = (ZhDate(today.year, 8, 15).to_datetime().date() - today).days
     if dist[6] < 0:
-        dist[6] = (ZhDate(today.year + 1, 8, 15).to_datetime().date() - today).days
+        dist[6] = (ZhDate(today.year + 1, 8,
+                          15).to_datetime().date() - today).days
     # 国庆 10.1
-    dist[7] = (datetime.datetime.strptime(f"{today.year}-10-01", "%Y-%m-%d").date() - today).days
+    dist[7] = (datetime.datetime.strptime(
+        f"{today.year}-10-01", "%Y-%m-%d").date() - today).days
     if dist[7] < 0:
-        dist[7] = (datetime.datetime.strptime(f"{today.year + 1}-10-01", "%Y-%m-%d").date() - today).days
+        dist[7] = (datetime.datetime.strptime(
+            f"{today.year + 1}-10-01", "%Y-%m-%d").date() - today).days
 
     # 组合列表并排序
     date_list = [
@@ -88,6 +101,7 @@ async def get_result() -> str:
         if date_list[i]["dist"] == 0:
             text = text + f"★ 今天就是{date_list[i]['title']}！\n"
         else:
-            text = text + f"☆ 距离{date_list[i]['title']}还有：{date_list[i]['dist']} 天\n"
+            text = text + \
+                   f"☆ 距离{date_list[i]['title']}还有：{date_list[i]['dist']} 天\n"
     text = text + f"\n学习增加老师负担，摸鱼是给老师减负！最后，祝愿天下所有摸鱼人，都能愉快的度过每一天！"
     return text
