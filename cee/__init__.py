@@ -8,7 +8,7 @@ cee = on_command("cee", aliases={"gk", "高考"}, priority=1)
 async def handle_cee():
     now = datetime.datetime.now()
     year = now.year
-    if (datetime.datetime.strptime(f"{year}-06-07 08:00", "%Y-%m-%d %H:%M") - now).seconds <= 0:
+    if (datetime.datetime.strptime(f"{year}-06-07 08:00", "%Y-%m-%d %H:%M") - now).total_seconds() <= 0:
         year += 1  # 如果今年高考已过，那么计算明年高考
     cee_time = f"{year}-06-07 08:00"
     delta = datetime.datetime.strptime(cee_time, "%Y-%m-%d %H:%M") - now
