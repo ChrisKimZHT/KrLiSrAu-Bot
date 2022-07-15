@@ -28,13 +28,13 @@ async def get_data(html: str) -> str:
         # 比赛名
         contest_name = col_list[1].a.text
         contest_id = re.findall(r"\d+", contest_name)[-1]
-        if re.search(r"Beginner", contest_name):
+        if re.search(r"Beginner|ABC", contest_name):
             contest = "ABC" + contest_id
-        elif re.search(r"Regular", contest_name):
+        elif re.search(r"Regular|ARC", contest_name):
             contest = "ARC" + contest_id
-        elif re.search(r"Grand", contest_name):
+        elif re.search(r"Grand|AGC", contest_name):
             contest = "AGC" + contest_id
-        elif re.search(r"Heuristic", contest_name):
+        elif re.search(r"Heuristic|AHC", contest_name):
             contest = "AHC" + contest_id
         else:
             contest = "ERROR"
