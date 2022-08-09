@@ -10,13 +10,20 @@ cert = on_command("cert", aliases={"ssl", "证书"}, priority=1)
 
 @cert.handle()
 async def handle_cert(args: Message = CommandArg()):
-    command = f"curl -Ivs {args} --connect-timeout 10"
+    if not re.match(r"https://", str(args)):
+        domain = "https://" + str(args)
+    else:
+        domain = str(args)
+    command = f"curl -Ivs {domain} --connect-timeout 10"
     cert_info = subprocess.getstatusoutput(command)[1]
+    subject = re.search("subject: (.*)", cert_info).group(1)
     start_date = datetime.strptime(re.search("start date: (.*)", cert_info).group(1), "%b %d %H:%M:%S %Y GMT")
     expire_date = datetime.strptime(re.search("expire date: (.*)", cert_info).group(1), "%b %d %H:%M:%S %Y GMT")
-    message = f"【证书查询】\n" \
-              f"域名: {args}\n" \
-              f"签发日期: {start_date}\n" \
-              f"失效日期: {expire_date}\n" \
-              f"剩余时间: {(expire_date - datetime.now()).days}"
+    issuer = re.search("issuer: (.*)", cert_info).group(1)
+    message = f"[SSL Cert Info]\n" \
+              f"Subject: {subject}\n" \
+              f"Start date: {start_date}\n" \
+              f"Expire date: {expire_date}\n" \
+              f"Remain: {(expire_date - datetime.now()).days} Day(s)\n" \
+              f"Issuer: {issuer}"
     await cert.finish(message)
