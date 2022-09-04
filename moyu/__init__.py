@@ -69,7 +69,8 @@ async def get_result() -> str:
         {"dist": dist[3], "title": "清明节"},
         {"dist": dist[4], "title": "劳动节"},
         {"dist": dist[5], "title": "端午节"},
-        {"dist": dist[6], "title": "国庆节"}
+        {"dist": dist[6], "title": "中秋节"},
+        {"dist": dist[7], "title": "国庆节"}
     ]
     date_list = sorted(date_list, key=lambda x: x["dist"])
 
