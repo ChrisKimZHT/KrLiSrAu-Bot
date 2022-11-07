@@ -53,13 +53,11 @@ class Setu:
         return True
 
     async def info_message(self) -> MessageSegment:
-        text = f"""
-        {self.title}
-        {self.author}
-        UID: {self.uid}
-        PID: {self.pid} ({self.page})
-        URL: {self.url}
-        """
+        text = f"""{self.title}
+{self.author}
+UID: {self.uid}
+PID: {self.pid} ({self.page})
+URL: {self.url}"""
         return MessageSegment.text(text)
 
     async def pic_message(self) -> MessageSegment:
