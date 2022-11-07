@@ -4,6 +4,7 @@ from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment, B
 from .setu_class import Setu
 from .withdraw import add_withdraw_job
 from .cooldown import check_cd, update_cd
+from .config import config
 
 setu = on_command("setu", aliases={"涩图"}, priority=1)
 
@@ -21,7 +22,8 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         my_setu = Setu(tags)
     if not await my_setu.get_data():
         await setu.finish("获取数据错误", at_sender=True)
-    await setu.send(await my_setu.info_message(), at_sender=True)
-    pic_msginfo = await setu.send(await my_setu.pic_message())
-    await add_withdraw_job(bot, **pic_msginfo)
+    await setu.send(await my_setu.info_message(), at_sender=True)  # 发送文字信息
+    if (my_setu.r18 and config.klsa_setu_send_nsfw) or (not my_setu.r18 and config.klsa_setu_send_sfw):
+        pic_msginfo = await setu.send(await my_setu.pic_message())  # 发送图片信息
+        await add_withdraw_job(bot, **pic_msginfo)
     await update_cd(event.user_id)

@@ -7,7 +7,9 @@ class SetuConfig(BaseModel):
     klsa_setu_proxy_url: str = ""
     klsa_setu_prefix_url: str = ""
     klsa_setu_withdraw_interval: int = 0
-    klsa_setu_cooldown_time: int = 10
+    klsa_setu_cooldown_time: int = 5
+    klsa_setu_send_sfw: bool = True
+    klsa_setu_send_nsfw: bool = False
 
 
 driver = get_driver()

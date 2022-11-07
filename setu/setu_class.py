@@ -53,10 +53,9 @@ class Setu:
         return True
 
     async def info_message(self) -> MessageSegment:
-        text = f"""{self.title}
-{self.author}
+        text = f"""{self.title} - {self.author}
 UID: {self.uid}
-PID: {self.pid} ({self.page})
+PID: {self.pid} (p{self.page})
 URL: {config.klsa_setu_prefix_url}{self.url}"""
         return MessageSegment.text(text)
 
