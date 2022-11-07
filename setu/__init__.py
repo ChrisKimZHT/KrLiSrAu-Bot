@@ -13,6 +13,7 @@ setu = on_command("setu", aliases={"涩图"}, priority=1)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not await check_cd(event.user_id):
         await setu.finish("冷却时间中", at_sender=True)
+    await update_cd(event.user_id)
     tags = args.extract_plain_text().split(" ")
     if len(tags) == 0:
         my_setu = Setu([])
@@ -26,4 +27,3 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if (my_setu.r18 and config.klsa_setu_send_nsfw) or (not my_setu.r18 and config.klsa_setu_send_sfw):
         pic_msginfo = await setu.send(await my_setu.pic_message())  # 发送图片信息
         await add_withdraw_job(bot, **pic_msginfo)
-    await update_cd(event.user_id)
