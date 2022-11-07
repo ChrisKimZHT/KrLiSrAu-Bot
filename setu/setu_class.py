@@ -23,11 +23,11 @@ class Setu:
         api = "https://api.lolicon.app/setu/v2"
         data = {
             "r18": self.r18,
-            "tags": self.tags,
+            "tag": self.tags,
             "size": [config.klsa_setu_default_size],
             "proxy": config.klsa_setu_proxy_url,
         }
-        respounce = requests.post(url=api, data=data)
+        respounce = requests.post(url=api, json=data)
         resp_dict = respounce.json()
         if len(resp_dict["data"]):  # API返回长度>0
             return resp_dict["data"][0]
