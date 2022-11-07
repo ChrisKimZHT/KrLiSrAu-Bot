@@ -57,7 +57,7 @@ class Setu:
 {self.author}
 UID: {self.uid}
 PID: {self.pid} ({self.page})
-URL: {self.url}"""
+URL: {config.klsa_setu_prefix_url}{self.url}"""
         return MessageSegment.text(text)
 
     async def pic_message(self) -> MessageSegment:
