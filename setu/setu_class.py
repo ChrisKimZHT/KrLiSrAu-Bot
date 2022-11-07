@@ -1,4 +1,6 @@
+from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 import requests
+from .config import SetuConfig
 
 
 class Setu:
@@ -15,13 +17,15 @@ class Setu:
         self.tags = tags
         self.ext = ""
         self.time = 0
-        self.urls = ""
+        self.url = ""
 
     async def _request_api(self):
         api = "https://api.lolicon.app/setu/v2"
         data = {
             "r18": self.r18,
-            "tags": self.tags
+            "tags": self.tags,
+            "size": [SetuConfig.klsa_setu_default_size],
+            "proxy": SetuConfig.klsa_setu_proxy_url,
         }
         respounce = requests.post(url=api, data=data)
         resp_dict = respounce.json()
@@ -44,6 +48,21 @@ class Setu:
         self.tags = setu_data["tags"]
         self.ext = setu_data["ext"]
         self.time = setu_data["uploadDate"]
-        self.urls = setu_data["urls"]["original"]
+        self.url = setu_data["url"][SetuConfig.klsa_setu_default_size]
         self.status = True
         return True
+
+    async def info_message(self) -> MessageSegment:
+        text = f"""
+        {self.title}
+        {self.author}
+        UID: {self.uid}
+        PID: {self.pid} ({self.page})
+        URL: {self.url}
+        """
+        return MessageSegment.text(text)
+
+    async def pic_message(self) -> MessageSegment:
+        respounce = requests.get(url=self.url)
+        byte_pic = respounce.content.strip()
+        return MessageSegment.image(byte_pic)
