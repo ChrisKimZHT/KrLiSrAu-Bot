@@ -1,6 +1,6 @@
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 import requests
-from .config import SetuConfig
+from .config import config
 
 
 class Setu:
@@ -24,8 +24,8 @@ class Setu:
         data = {
             "r18": self.r18,
             "tags": self.tags,
-            "size": [SetuConfig.klsa_setu_default_size],
-            "proxy": SetuConfig.klsa_setu_proxy_url,
+            "size": [config.klsa_setu_default_size],
+            "proxy": config.klsa_setu_proxy_url,
         }
         respounce = requests.post(url=api, data=data)
         resp_dict = respounce.json()
@@ -48,7 +48,7 @@ class Setu:
         self.tags = setu_data["tags"]
         self.ext = setu_data["ext"]
         self.time = setu_data["uploadDate"]
-        self.url = setu_data["url"][SetuConfig.klsa_setu_default_size]
+        self.url = setu_data["urls"][config.klsa_setu_default_size]
         self.status = True
         return True
 
