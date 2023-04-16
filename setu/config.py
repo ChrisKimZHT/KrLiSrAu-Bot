@@ -10,6 +10,7 @@ class SetuConfig(BaseModel):
     klsa_setu_cooldown_time: int = 5
     klsa_setu_send_sfw: bool = True
     klsa_setu_send_nsfw: bool = False
+    klsa_setu_obfuscate: bool = False
 
 
 driver = get_driver()

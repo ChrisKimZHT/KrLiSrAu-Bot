@@ -1,6 +1,13 @@
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 import requests
+from PIL import Image
+from io import BytesIO
+import random
 from .config import config
+
+
+def random_color() -> tuple:
+    return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
 
 
 class Setu:
@@ -59,7 +66,16 @@ PID: {self.pid} (p{self.page})
 URL: {config.klsa_setu_prefix_url}{self.url}"""
         return MessageSegment.text(text)
 
-    async def pic_message(self) -> MessageSegment:
+    async def pic_message(self, obfuscate: bool = False) -> MessageSegment:
         respounce = requests.get(url=self.url)
-        byte_pic = respounce.content.strip()
-        return MessageSegment.image(byte_pic)
+        byte_image = respounce.content.strip()
+        if obfuscate:  # 修改四个角的像素，随机颜色
+            image = Image.open(BytesIO(byte_image))
+            image.putpixel((0, 0), random_color())
+            image.putpixel((0, image.height - 1), random_color())
+            image.putpixel((image.width - 1, 0), random_color())
+            image.putpixel((image.width - 1, image.height - 1), random_color())
+            obfuscated_byte_image = BytesIO()
+            image.save(obfuscated_byte_image, format="PNG")
+            return MessageSegment.image(obfuscated_byte_image)
+        return MessageSegment.image(byte_image)
