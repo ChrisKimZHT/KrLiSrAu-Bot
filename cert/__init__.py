@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 import subprocess
 import re
 
-cert = on_command("cert", aliases={"ssl", "证书"}, priority=1)
+cert = on_command("cert", aliases={"ssl", "证书"}, priority=1, block=True)
 
 
 @cert.handle()

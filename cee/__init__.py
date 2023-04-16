@@ -3,7 +3,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
 from nonebot.params import CommandArg
 
-cee = on_command("cee", aliases={"gk", "高考"}, priority=1)
+cee = on_command("cee", aliases={"gk", "高考"}, priority=1, block=True)
 
 
 @cee.handle()

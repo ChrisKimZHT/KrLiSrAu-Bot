@@ -6,7 +6,7 @@ from .withdraw import add_withdraw_job
 from .cooldown import check_cd, update_cd
 from .config import config
 
-setu = on_command("setu", aliases={"涩图"}, priority=1)
+setu = on_command("setu", aliases={"涩图"}, priority=1, block=True)
 
 
 @setu.handle()

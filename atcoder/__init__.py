@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 from .download import req_page
 from .resolve import analy_page
 
-atcoder = on_command("atcoder", aliases={"atc"}, priority=1)
+atcoder = on_command("atcoder", aliases={"atc"}, priority=1, block=True)
 
 
 @atcoder.handle()

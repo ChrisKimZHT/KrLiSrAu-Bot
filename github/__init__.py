@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 import requests
 from cairosvg import svg2png
 
-ghcontribute = on_command("ghcontribute", aliases={"ghc"}, priority=1)
+ghcontribute = on_command("ghcontribute", aliases={"ghc"}, priority=1, block=True)
 
 
 @ghcontribute.handle()

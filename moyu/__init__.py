@@ -2,7 +2,7 @@ import datetime
 from zhdate import ZhDate
 from nonebot import on_command
 
-moyu = on_command("moyu", aliases={"摸鱼"}, priority=1)
+moyu = on_command("moyu", aliases={"摸鱼"}, priority=1, block=True)
 
 
 @moyu.handle()

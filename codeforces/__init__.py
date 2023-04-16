@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 import requests
 import time
 
-codeforces = on_command("codeforces", aliases={"cf"}, priority=1)
+codeforces = on_command("codeforces", aliases={"cf"}, priority=1, block=True)
 
 
 @codeforces.handle()
