@@ -11,7 +11,7 @@ chat_data = {}
 
 @chatgpt.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text == "":
+    if args.extract_plain_text() == "":
         await chatgpt.finish("内容不可为空", at_sender=True)
         return
 
