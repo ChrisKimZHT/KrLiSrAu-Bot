@@ -28,7 +28,7 @@ class Chat:
             }
         try:
             resp_json = respounce.json()
-            self._append_message(resp_json["choices"][0])
+            self._append_message(resp_json["choices"][0]["message"])
             return resp_json["choices"][0]["message"]
         except Exception as e:
             return {
