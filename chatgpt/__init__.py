@@ -23,7 +23,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 
     # 检查是否有历史对话
     if event.user_id not in chat_data:
-        await chatgpt.finish("无历史对话可用，请先创建对话: /chat create", at_sender=True)
+        await chatgpt.finish("无历史对话可用，请先创建对话: chat create", at_sender=True)
         return
 
     # 开始对话
