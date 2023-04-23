@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.rule import to_me
 from .chat_class import Chat
 
-chatgpt = on_command("chatgpt", rule=to_me(), aliases={"gpt", "chat"}, priority=1, block=True)
+chatgpt = on_command("chatgpt", aliases={"gpt", "chat"}, priority=1, block=True)
 
 chat_data = {}
 
