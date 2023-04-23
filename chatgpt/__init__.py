@@ -12,18 +12,18 @@ chat_data = {}
 @chatgpt.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
-        await chatgpt.finish("内容不可为空", at_sender=True)
+        await chatgpt.finish("内容不可为空")
         return
 
     # 创建新对话
     if args.extract_plain_text() == "create":
         chat_data[event.user_id] = Chat(event.user_id)
-        await chatgpt.finish("已创建新对话", at_sender=True)
+        await chatgpt.finish("已创建新对话")
         return
 
     # 检查是否有历史对话
     if event.user_id not in chat_data:
-        await chatgpt.finish("无历史对话可用，请先创建对话: chat create", at_sender=True)
+        await chatgpt.finish("无历史对话可用，请先创建对话: chat create")
         return
 
     # 开始对话
