@@ -17,7 +17,7 @@ help_msg = """ChatGPT - 基于OpenAI接口的聊天机器人
     chatgpt <内容> - 进行连续对话
     chatgpt single <内容> - 进行一次性对话
     chatgpt setting - 清除对话预设
-    chatgpt setting <内容> - 设置对话预设
+    chatgpt setting <内容> - 设置对话预设（会立即初始化）
     chatgpt reset - 重置对话
 """
 
@@ -32,18 +32,17 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     elif args_text == "reset":
         chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         await chatgpt.finish("重置对话完成")
-    elif args_text.startswith("setting"):
+    elif args_text == "setting":
+        chat_setting["user_id"] = None
+        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
+        await chatgpt.finish("清除设定完成")
+    elif args_text.startswith("setting "):
         message = args_text.split(" ", 1)[1]
-        if message == "":
-            chat_setting["user_id"] = None
-            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-            await chatgpt.finish("清除设定完成")
-        else:
-            chat_setting[user_id] = message
-            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-            chat_inst = chat_data[user_id]
-            await chat(chat_inst, None)
-    elif args_text.startswith("single"):
+        chat_setting[user_id] = message
+        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
+        chat_inst = chat_data[user_id]
+        await chat(chat_inst, None)
+    elif args_text.startswith("single "):
         message = args_text.split(" ", 1)[1]
         if message == "":
             await chatgpt.reject("内容不可为空")
