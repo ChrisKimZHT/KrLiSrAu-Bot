@@ -1,4 +1,4 @@
-import requests
+import aiohttp
 import time
 from .config import config
 
@@ -19,8 +19,9 @@ class Chat:
         headers = {
             "Authorization": "Bearer " + config.klsa_chat_api_key
         }
-        respounce = requests.post(url=api, json=data, headers=headers)
-        return respounce.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=api, json=data, headers=headers) as resp:
+                return await resp.json()
 
     def _append_assistant_message(self, message: str) -> None:
         self.messages.append({
