@@ -19,25 +19,14 @@ class Chat:
         headers = {
             "Authorization": "Bearer " + config.klsa_chat_api_key
         }
-        try:
-            respounce = requests.post(url=api, json=data, headers=headers)
-        except Exception as e:
-            return {
-                "role": "error",
-                "content": f"网络请求错误\n{e}"
-            }
-        try:
-            resp_json = respounce.json()
-            self._append_message(resp_json["choices"][0]["message"])
-            return resp_json["choices"][0]["message"]
-        except Exception as e:
-            return {
-                "role": "error",
-                "content": f"解析响应错误\n{e}"
-            }
+        respounce = requests.post(url=api, json=data, headers=headers)
+        return respounce.json()
 
-    def _append_message(self, message: dict) -> None:
-        self.messages.append(message)
+    def _append_assistant_message(self, message: str) -> None:
+        self.messages.append({
+            "role": "assistant",
+            "content": message,
+        })
 
     def _append_user_message(self, message: str) -> None:
         self.messages.append({
@@ -45,9 +34,20 @@ class Chat:
             "content": message,
         })
 
-    async def chat(self, message: str) -> str:
+    async def chat(self, message: str) -> (str, int):
         self._append_user_message(message)
-        result = await self._request_api()
-        if result["role"] == "error":
+        try:
+            resp = await self._request_api()
+        except Exception as e:
             self.messages.pop()  # 若错误则还原
-        return result["content"]
+            return f"网络请求错误: {e}", 0
+
+        try:
+            content = resp["choices"][0]["message"]["content"]
+            usage = resp["usage"]["total_tokens"]
+        except Exception as e:
+            self.messages.pop()  # 若错误则还原
+            return f"解析响应错误: {e}", 0
+
+        self._append_assistant_message(content)
+        return content, usage
