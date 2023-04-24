@@ -34,20 +34,34 @@ class Chat:
             "content": message,
         })
 
-    async def chat(self, message: str) -> (str, int):
+    async def chat(self, message: str) -> (str, int, bool):
+        content = ""  # 回答内容
+        usage = 0  # 消耗token数量
+        poped = False  # 是否删除了最早的一次对话
+
         self._append_user_message(message)
+
         try:
             resp = await self._request_api()
         except Exception as e:
+            content += f"网络请求错误: {e}"
             self.messages.pop()  # 若错误则还原
-            return f"网络请求错误: {e}", 0
+            return content, usage, poped
 
         try:
-            content = resp["choices"][0]["message"]["content"]
+            content += resp["choices"][0]["message"]["content"]
             usage = resp["usage"]["total_tokens"]
         except Exception as e:
+            content += f"解析响应错误: {e}"
             self.messages.pop()  # 若错误则还原
-            return f"解析响应错误: {e}", 0
+            return content, usage, poped
+
+        # 如果达到token限制，则删除最早的一次对话
+        if usage >= config.klsa_chat_token_limit and len(self.messages) >= 2:
+            self.messages.pop(0)
+            self.messages.pop(0)
+            poped = True
 
         self._append_assistant_message(content)
-        return content, usage
+
+        return content, usage, poped
