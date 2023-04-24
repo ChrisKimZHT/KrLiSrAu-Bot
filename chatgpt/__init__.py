@@ -24,8 +24,10 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     if event.user_id not in chat_data:
         await chatgpt.finish("无历史对话可用，请先创建对话: chat create")
 
-    # 开始对话
     chat_inst = chat_data[event.user_id]
+    if chat_inst.get_lock():
+        await chatgpt.finish("上次请求还未完成，请稍后再试或强制创建新会话: chat create")
+
     start_time = time.time()
     await chatgpt.send("请求已发送，等待接口响应")
     content, usage, poped = await chat_inst.chat(args.extract_plain_text())
