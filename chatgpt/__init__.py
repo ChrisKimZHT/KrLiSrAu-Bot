@@ -12,34 +12,44 @@ chat_data = {}
 
 @chatgpt.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        await chatgpt.finish("内容不可为空")
+    args_text = args.extract_plain_text()
+    user_id = event.user_id
 
-    # 创建新对话
-    if args.extract_plain_text() == "create":
-        chat_data[event.user_id] = Chat(event.user_id)
-        await chatgpt.finish("已创建新对话")
+    if args_text == "":
+        await chatgpt.reject("内容不可为空")
+    elif args_text == "reset" or args_text == "r":
+        chat_data[user_id] = Chat(user_id)
+        await chatgpt.finish("重置对话完成")
+    elif args_text.startswith("single ") or args_text.startswith("s "):
+        message = args_text.split(" ", 1)[1]
+        if message == "":
+            await chatgpt.reject("内容不可为空")
+        chat_inst = Chat(user_id)
+        await chat(chat_inst, message)
+    else:
+        if user_id not in chat_data:
+            chat_data[user_id] = Chat(user_id)
+        chat_inst = chat_data[user_id]
+        await chat(chat_inst, args_text)
 
-    # 检查是否有历史对话
-    if event.user_id not in chat_data:
-        await chatgpt.finish("无历史对话可用，请先创建对话: chat create")
 
-    chat_inst = chat_data[event.user_id]
-    if chat_inst.get_lock():
-        await chatgpt.finish("上次请求还未完成，请稍后再试或强制创建新会话: chat create")
-
-    start_time = time.time()
-    await chatgpt.send("请求已发送，等待接口响应")
-    content, usage, poped = await chat_inst.chat(args.extract_plain_text())
-    end_time = time.time()
-
-    # 计算消费
-    info_str = "\n\n计算耗时: %.2f sec\n单位数量: %d token(s)" % (end_time - start_time, usage)
+def get_info_str(duration: float, usage: int, poped: bool) -> str:
+    info_str = "计算耗时: %.2f sec\n单位数量: %d token(s)" % (duration, usage)
     if config.klsa_chat_kt_cost != -1:
         info_str += "\n消费金额: $%.6f" % (config.klsa_chat_kt_cost * usage / 1000)
     if poped:
         info_str += "\n[!] 最早的一次对话被删除"
+    return info_str
 
-    # 发送结果
-    result = MessageSegment.text(content) + MessageSegment.text(info_str)
+
+async def chat(chat_inst: Chat, message: str):
+    if chat_inst.get_lock():
+        await chatgpt.reject("上次请求还未完成，请稍后再试或强制创建新会话: chat create")
+    await chatgpt.send("请求已发送，等待接口响应...")
+    start_time = time.time()
+    content, usage, poped = await chat_inst.chat(message)
+    end_time = time.time()
+    duration = end_time - start_time
+    info_str = get_info_str(duration, usage, poped)
+    result = MessageSegment.text(content) + MessageSegment.text("\n\n") + MessageSegment.text(info_str)
     await chatgpt.finish(result, at_sender=True)
