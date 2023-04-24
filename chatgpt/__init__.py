@@ -6,10 +6,20 @@ from .chat_class import Chat
 from typing import Optional
 import time
 
-chatgpt = on_command("chatgpt", aliases={"gpt", "chat"}, priority=1, block=True)
+chatgpt = on_command("chatgpt", aliases={"gpt", "chat", "对话"}, priority=1, block=True)
 
 chat_data = {}
 chat_setting = {}
+help_msg = """ChatGPT - 基于OpenAI接口的聊天机器人
+指令: chatgpt / gpt / chat / 对话
+用法: <内容> / single <内容> / setting <内容> / reset / help
+详情:
+    chatgpt <内容> - 进行连续对话
+    chatgpt single <内容> - 进行一次性对话
+    chatgpt setting - 清除对话预设
+    chatgpt setting <内容> - 设置对话预设
+    chatgpt reset - 重置对话
+"""
 
 
 @chatgpt.handle()
@@ -17,8 +27,8 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
 
-    if args_text == "":
-        await chatgpt.reject("内容不可为空")
+    if args_text == "" or args_text == "help":
+        await chatgpt.finish(help_msg)
     elif args_text == "reset":
         chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         await chatgpt.finish("重置对话完成")
