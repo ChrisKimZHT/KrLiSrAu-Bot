@@ -1,5 +1,5 @@
-from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
-import requests
+from nonebot.adapters.onebot.v11 import MessageSegment
+import aiohttp
 from PIL import Image
 from io import BytesIO
 import random
@@ -34,11 +34,12 @@ class Setu:
             "size": [config.klsa_setu_default_size],
             "proxy": config.klsa_setu_proxy_url,
         }
-        respounce = requests.post(url=api, json=data)
-        resp_dict = respounce.json()
-        if len(resp_dict["data"]):  # API返回长度>0
-            return resp_dict["data"][0]
-        return None
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=api, json=data) as resp:
+                resp_dict = await resp.json()
+                if len(resp_dict["data"]):  # API返回长度>0
+                    return resp_dict["data"][0]
+                return None
 
     async def get_data(self) -> bool:
         setu_data = await self._request_api()
@@ -67,15 +68,16 @@ URL: {config.klsa_setu_prefix_url}{self.url}"""
         return MessageSegment.text(text)
 
     async def pic_message(self, obfuscate: bool = False) -> MessageSegment:
-        respounce = requests.get(url=self.url)
-        byte_image = respounce.content.strip()
-        if obfuscate:  # 修改四个角的像素，随机颜色
-            image = Image.open(BytesIO(byte_image))
-            image.putpixel((0, 0), random_color())
-            image.putpixel((0, image.height - 1), random_color())
-            image.putpixel((image.width - 1, 0), random_color())
-            image.putpixel((image.width - 1, image.height - 1), random_color())
-            obfuscated_byte_image = BytesIO()
-            image.save(obfuscated_byte_image, format="PNG")
-            return MessageSegment.image(obfuscated_byte_image)
-        return MessageSegment.image(byte_image)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=self.url) as resp:
+                byte_image = await resp.read()
+                if obfuscate:  # 修改四个角的像素，随机颜色
+                    image = Image.open(BytesIO(byte_image))
+                    image.putpixel((0, 0), random_color())
+                    image.putpixel((0, image.height - 1), random_color())
+                    image.putpixel((image.width - 1, 0), random_color())
+                    image.putpixel((image.width - 1, image.height - 1), random_color())
+                    obfuscated_byte_image = BytesIO()
+                    image.save(obfuscated_byte_image, format="PNG")
+                    return MessageSegment.image(obfuscated_byte_image)
+                return MessageSegment.image(byte_image)
