@@ -3,11 +3,13 @@ from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
 from nonebot.params import CommandArg
 from .config import config
 from .chat_class import Chat
+from typing import Optional
 import time
 
 chatgpt = on_command("chatgpt", aliases={"gpt", "chat"}, priority=1, block=True)
 
 chat_data = {}
+chat_setting = {}
 
 
 @chatgpt.handle()
@@ -17,10 +19,21 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 
     if args_text == "":
         await chatgpt.reject("内容不可为空")
-    elif args_text == "reset" or args_text == "r":
-        chat_data[user_id] = Chat(user_id)
+    elif args_text == "reset":
+        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         await chatgpt.finish("重置对话完成")
-    elif args_text.startswith("single ") or args_text.startswith("s "):
+    elif args_text.startswith("setting"):
+        message = args_text.split(" ", 1)[1]
+        if message == "":
+            chat_setting["user_id"] = None
+            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
+            await chatgpt.finish("清除设定完成")
+        else:
+            chat_setting[user_id] = message
+            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
+            chat_inst = chat_data[user_id]
+            await chat(chat_inst, None)
+    elif args_text.startswith("single"):
         message = args_text.split(" ", 1)[1]
         if message == "":
             await chatgpt.reject("内容不可为空")
@@ -28,7 +41,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await chat(chat_inst, message)
     else:
         if user_id not in chat_data:
-            chat_data[user_id] = Chat(user_id)
+            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         chat_inst = chat_data[user_id]
         await chat(chat_inst, args_text)
 
@@ -42,7 +55,7 @@ def get_info_str(duration: float, usage: int, poped: bool) -> str:
     return info_str
 
 
-async def chat(chat_inst: Chat, message: str):
+async def chat(chat_inst: Chat, message: Optional[str]):
     if chat_inst.get_lock():
         await chatgpt.reject("上次请求还未完成，请稍后再试或强制创建新会话: chat create")
     await chatgpt.send("请求已发送，等待接口响应...")

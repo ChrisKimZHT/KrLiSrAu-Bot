@@ -1,11 +1,13 @@
 import aiohttp
 import time
 from .config import config
+from typing import Optional
 
 
 class Chat:
-    def __init__(self, user: int, model: str = config.klsa_chat_model):
+    def __init__(self, user: int, setting: str = None, model: str = config.klsa_chat_model):
         self.user = user
+        self.setting = setting
         self.model = model
         self.messages = []
         self.create_time = time.time()
@@ -13,9 +15,16 @@ class Chat:
 
     async def _request_api(self) -> dict:
         api = config.klsa_chat_api_url
+        messages = []
+        if self.setting is not None:
+            messages.append({
+                "role": "user",
+                "content": self.setting
+            })
+        messages += self.messages
         data = {
             "model": self.model,
-            "messages": self.messages,
+            "messages": messages,
         }
         headers = {
             "Authorization": "Bearer " + config.klsa_chat_api_key
@@ -39,7 +48,7 @@ class Chat:
     def get_lock(self) -> bool:
         return self.lock
 
-    async def chat(self, message: str) -> (str, int, bool):
+    async def chat(self, message: Optional[str]) -> (str, int, bool):
         content = ""  # 回答内容
         usage = 0  # 消耗token数量
         poped = False  # 是否删除了最早的一次对话
@@ -49,7 +58,9 @@ class Chat:
 
         try:
             self.lock = True
-            self._append_user_message(message)
+
+            if message is not None:
+                self._append_user_message(message)
 
             try:
                 resp = await self._request_api()
