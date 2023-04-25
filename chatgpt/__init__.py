@@ -33,7 +33,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         await chatgpt.finish("重置对话完成")
     elif args_text == "setting":
-        chat_setting["user_id"] = None
+        chat_setting[user_id] = None
         chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
         await chatgpt.finish("清除设定完成")
     elif args_text.startswith("setting "):
