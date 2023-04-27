@@ -1,10 +1,25 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
 from nonebot.params import CommandArg
-from .config import config
+from nonebot.plugin import PluginMetadata
+from .config import chatgpt_config, Config
 from .chat_class import Chat
 from typing import Optional
 import time
+
+__plugin_meta__ = PluginMetadata(
+    name="ChatGPT",
+    description="基于OpenAI接口的聊天机器人",
+    usage="""指令: chatgpt / gpt / chat / 对话
+用法: chatgpt [选项] <内容>
+    <内容> - 进行连续对话
+    single <内容> - 进行一次性对话
+    setting - 清除对话预设
+    setting <内容> - 设置对话预设（会立即初始化）
+    reset - 重置对话
+    help - 查看帮助""",
+    config=Config
+)
 
 chatgpt = on_command("chatgpt", aliases={"gpt", "chat", "对话"}, priority=1, block=True)
 
@@ -57,8 +72,8 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 
 def get_info_str(duration: float, usage: int, poped: bool) -> str:
     info_str = "计算耗时: %.2f sec\n单位数量: %d token(s)" % (duration, usage)
-    if config.klsa_chat_kt_cost != -1:
-        info_str += "\n消费金额: $%.6f" % (config.klsa_chat_kt_cost * usage / 1000)
+    if chatgpt_config.klsa_chat_kt_cost != -1:
+        info_str += "\n消费金额: $%.6f" % (chatgpt_config.klsa_chat_kt_cost * usage / 1000)
     if poped:
         info_str += "\n[!] 最早的一次对话被删除"
     return info_str

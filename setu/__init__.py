@@ -1,10 +1,21 @@
 from nonebot import on_command
-from nonebot.params import CommandArg, Command
-from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment, Bot
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Message, MessageEvent, Bot
+from nonebot.plugin import PluginMetadata
 from .setu_class import Setu
 from .withdraw import add_withdraw_job
 from .cooldown import check_cd, update_cd
-from .config import config
+from .config import setu_config, Config
+
+__plugin_meta__ = PluginMetadata(
+    name="涩图",
+    description="发送随机涩图",
+    usage="""指令: setu / 涩图
+用法: setu [标签...] [R18]
+    [标签...] - 指定标签，多个标签用空格分隔
+    [R18] - 指定是否为R18，默认为否""",
+    config=Config
+)
 
 setu = on_command("setu", aliases={"涩图"}, priority=1, block=True)
 
@@ -37,8 +48,8 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
     # 发送图片信息
     try:
-        if (my_setu.r18 and config.klsa_setu_send_nsfw) or (not my_setu.r18 and config.klsa_setu_send_sfw):
-            message = await my_setu.pic_message(config.klsa_setu_obfuscate)
+        if (my_setu.r18 and setu_config.klsa_setu_send_nsfw) or (not my_setu.r18 and setu_config.klsa_setu_send_sfw):
+            message = await my_setu.pic_message(setu_config.klsa_setu_obfuscate)
             pic_msginfo = await setu.send(message)
             await add_withdraw_job(bot, **pic_msginfo)
     except Exception as e:

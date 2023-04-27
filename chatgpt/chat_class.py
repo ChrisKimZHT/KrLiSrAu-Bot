@@ -1,11 +1,11 @@
 import aiohttp
 import time
-from .config import config
+from .config import chatgpt_config
 from typing import Optional
 
 
 class Chat:
-    def __init__(self, user: int, setting: str = None, model: str = config.klsa_chat_model):
+    def __init__(self, user: int, setting: str = None, model: str = chatgpt_config.klsa_chat_model):
         self.user = user
         self.setting = setting
         self.model = model
@@ -14,7 +14,7 @@ class Chat:
         self.lock = False
 
     async def _request_api(self) -> dict:
-        api = config.klsa_chat_api_url
+        api = chatgpt_config.klsa_chat_api_url
         messages = []
         if self.setting is not None:
             messages.append({
@@ -27,7 +27,7 @@ class Chat:
             "messages": messages,
         }
         headers = {
-            "Authorization": "Bearer " + config.klsa_chat_api_key
+            "Authorization": "Bearer " + chatgpt_config.klsa_chat_api_key
         }
         async with aiohttp.ClientSession() as session:
             async with session.post(url=api, json=data, headers=headers) as resp:
@@ -78,7 +78,7 @@ class Chat:
                 raise
 
             # 如果达到token限制，则删除最早的一次对话
-            if usage >= config.klsa_chat_token_limit and len(self.messages) >= 2:
+            if usage >= chatgpt_config.klsa_chat_token_limit and len(self.messages) >= 2:
                 self.messages.pop(0)
                 self.messages.pop(0)
                 poped = True
