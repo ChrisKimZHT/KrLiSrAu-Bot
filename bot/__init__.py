@@ -65,7 +65,9 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 
     for plugin in plugins:
         if plugin.name == args_test:
-            help_text = plugin.metadata.name + " - " + plugin.metadata.description + "\n" + plugin.metadata.usage
+            help_text = f"""{plugin.metadata.name} - {plugin.metadata.description}
+版本: v{plugin.metadata.extra.get("version")}
+{plugin.metadata.usage}"""
             await bot_help.finish(help_text)
     else:
         text = """没有查询到此插件，可能原因：
