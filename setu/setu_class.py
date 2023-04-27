@@ -3,7 +3,7 @@ import aiohttp
 from PIL import Image
 from io import BytesIO
 import random
-from .config import config
+from .config import setu_config
 
 
 def random_color() -> tuple:
@@ -31,8 +31,8 @@ class Setu:
         data = {
             "r18": self.r18,
             "tag": self.tags,
-            "size": [config.klsa_setu_default_size],
-            "proxy": config.klsa_setu_proxy_url,
+            "size": [setu_config.klsa_setu_default_size],
+            "proxy": setu_config.klsa_setu_proxy_url,
         }
         async with aiohttp.ClientSession() as session:
             async with session.post(url=api, json=data) as resp:
@@ -56,7 +56,7 @@ class Setu:
         self.tags = setu_data["tags"]
         self.ext = setu_data["ext"]
         self.time = setu_data["uploadDate"]
-        self.url = setu_data["urls"][config.klsa_setu_default_size]
+        self.url = setu_data["urls"][setu_config.klsa_setu_default_size]
         self.status = True
         return True
 
@@ -64,7 +64,7 @@ class Setu:
         text = f"""{self.title} - {self.author}
 UID: {self.uid}
 PID: {self.pid} (p{self.page})
-URL: {config.klsa_setu_prefix_url}{self.url}"""
+URL: {setu_config.klsa_setu_prefix_url}{self.url}"""
         return MessageSegment.text(text)
 
     async def pic_message(self, obfuscate: bool = False) -> MessageSegment:

@@ -1,8 +1,26 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
 from nonebot.params import CommandArg
+from nonebot.plugin import PluginMetadata
 from .download import req_page
 from .resolve import analy_page
+
+__plugin_meta__ = PluginMetadata(
+    name="AtCoder比赛查询",
+    description="查询AtCoder比赛信息",
+    usage="""指令: atcoder / atc
+用法: atcoder [选项]
+    空 - 显示所有类别
+    abc - 显示Beginner类别
+    arc - 显示Regular类别
+    agc - 显示Grand类别
+    ahc - 显示Heuristic类别""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.1",
+        "KrLiSrAu-Bot": True,
+    }
+)
 
 atcoder = on_command("atcoder", aliases={"atc"}, priority=1, block=True)
 

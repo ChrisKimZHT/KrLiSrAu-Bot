@@ -1,8 +1,21 @@
 from nonebot import on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 import aiohttp
 from cairosvg import svg2png
+
+__plugin_meta__ = PluginMetadata(
+    name="GitHub贡献查询",
+    description="查询指定用户GitHub贡献图",
+    usage="""指令: ghcontribute / ghc
+用法: ghcontribute <用户名> - 查询指定用户的GitHub贡献图""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.2",
+        "KrLiSrAu-Bot": True,
+    }
+)
 
 ghcontribute = on_command("ghcontribute", aliases={"ghc"}, priority=1, block=True)
 
