@@ -17,6 +17,8 @@ __plugin_meta__ = PluginMetadata(
     single <内容> - 进行一次性对话
     setting - 清除对话预设
     setting <内容> - 设置对话预设（会立即初始化）
+    len - 查看对话长度（一问一答算一次）
+    pop [front/back] - 删除最早/最晚的一次对话
     reset - 重置对话
     help - 查看帮助""",
     config=Config
@@ -25,6 +27,8 @@ __plugin_meta__ = PluginMetadata(
 chatgpt = on_command("chatgpt", aliases={"chat"}, priority=1, block=True)
 chatgpt_single = on_command(("chatgpt", "single"), aliases={("chat", "single")}, priority=1, block=True)
 chatgpt_setting = on_command(("chatgpt", "setting"), aliases={("chat", "setting")}, priority=1, block=True)
+chatgpt_len = on_command(("chatgpt", "len"), aliases={("chat", "len")}, priority=1, block=True)
+chatgpt_pop = on_command(("chatgpt", "pop"), aliases={("chat", "pop")}, priority=1, block=True)
 chatgpt_reset = on_command(("chatgpt", "reset"), aliases={("chat", "reset")}, priority=1, block=True)
 chatgpt_help = on_command(("chatgpt", "help"), aliases={("chat", "help")}, priority=1, block=True)
 
@@ -67,6 +71,38 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
         chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
         chat_inst = chat_instance[user_id]
         await chat(matcher, chat_inst, None)
+
+
+@chatgpt_len.handle()
+async def _(event: MessageEvent):
+    user_id = event.user_id
+    if user_id not in chat_instance:
+        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+    chat_inst: Chat = chat_instance[user_id]
+    await chatgpt_len.finish(f"当前对话长度为{chat_inst.history_len()}")
+
+
+@chatgpt_pop.handle()
+async def _(event: MessageEvent, args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    user_id = event.user_id
+    if user_id not in chat_instance:
+        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+    chat_inst: Chat = chat_instance[user_id]
+    if args_text == "front":
+        poped = chat_inst.pop_front()
+        if poped:
+            await chatgpt_pop.finish(f"已删除最早的一次对话，剩余{chat_inst.history_len()}")
+        else:
+            await chatgpt_pop.finish("当前没有对话")
+    elif args_text == "back":
+        poped = chat_inst.pop_back()
+        if poped:
+            await chatgpt_pop.finish(f"已删除最晚的一次对话，剩余{chat_inst.history_len()}")
+        else:
+            await chatgpt_pop.finish("当前没有对话")
+    else:
+        await chatgpt_pop.reject("参数错误，front为最早的一次对话，back为最晚的一次对话")
 
 
 @chatgpt_reset.handle()
