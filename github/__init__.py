@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
-import requests
+import aiohttp
 from cairosvg import svg2png
 
 ghcontribute = on_command("ghcontribute", aliases={"ghc"}, priority=1, block=True)
@@ -19,8 +19,10 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 async def req_api(user: str) -> str:
     api = f"https://ghchart.rshah.org/{user}"
     try:
-        resp = requests.get(api)
-        png = svg2png(bytestring=resp.text.strip(), output_height=512, background_color="#FFFFFF")
-        return png
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=api) as resp:
+                byte_img = await resp.read()
+                png = svg2png(bytestring=byte_img, output_height=512, background_color="#FFFFFF")
+                return png
     except Exception:
         return f"ERROR"
