@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, MessageEvent
 from nonebot.params import CommandArg
-import requests
+import aiohttp
 import time
 
 codeforces = on_command("codeforces", aliases={"cf"}, priority=1, block=True)
@@ -28,8 +28,9 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 
 async def get_list() -> dict:
     api = "https://codeforces.com/api/contest.list"
-    respounce = requests.get(api)
-    return respounce.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=api) as resp:
+            return await resp.json()
 
 
 async def sort_list(original: dict, count: int) -> list:
