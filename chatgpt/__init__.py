@@ -1,5 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
+from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .config import chatgpt_config, Config
@@ -10,7 +11,7 @@ import time
 __plugin_meta__ = PluginMetadata(
     name="ChatGPT",
     description="基于OpenAI接口的聊天机器人",
-    usage="""指令: chatgpt / gpt / chat / 对话
+    usage="""指令: chatgpt / chat
 用法: chatgpt [选项] <内容>
     <内容> - 进行连续对话
     single <内容> - 进行一次性对话
@@ -21,53 +22,63 @@ __plugin_meta__ = PluginMetadata(
     config=Config
 )
 
-chatgpt = on_command("chatgpt", aliases={"gpt", "chat", "对话"}, priority=1, block=True)
+chatgpt = on_command("chatgpt", aliases={"chat"}, priority=1, block=True)
+chatgpt_single = on_command(("chatgpt", "single"), aliases={("chat", "single")}, priority=1, block=True)
+chatgpt_setting = on_command(("chatgpt", "setting"), aliases={("chat", "setting")}, priority=1, block=True)
+chatgpt_reset = on_command(("chatgpt", "reset"), aliases={("chat", "reset")}, priority=1, block=True)
+chatgpt_help = on_command(("chatgpt", "help"), aliases={("chat", "help")}, priority=1, block=True)
 
-chat_data = {}
+chat_instance = {}
 chat_setting = {}
-help_msg = """ChatGPT - 基于OpenAI接口的聊天机器人
-指令: chatgpt / gpt / chat / 对话
-用法: <内容> / single <内容> / setting <内容> / reset / help
-详情:
-    chatgpt <内容> - 进行连续对话
-    chatgpt single <内容> - 进行一次性对话
-    chatgpt setting - 清除对话预设
-    chatgpt setting <内容> - 设置对话预设（会立即初始化）
-    chatgpt reset - 重置对话
-"""
 
 
 @chatgpt.handle()
-async def _(event: MessageEvent, args: Message = CommandArg()):
+async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
+    if args_text == "":
+        await chatgpt.finish(__plugin_meta__.usage)
+    if user_id not in chat_instance:
+        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+    chat_inst = chat_instance[user_id]
+    await chat(matcher, chat_inst, args_text)
 
-    if args_text == "" or args_text == "help":
-        await chatgpt.finish(help_msg)
-    elif args_text == "reset":
-        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-        await chatgpt.finish("重置对话完成")
-    elif args_text == "setting":
+
+@chatgpt_single.handle()
+async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    user_id = event.user_id
+    if args_text == "":
+        await chatgpt_single.reject("内容不可为空")
+    chat_inst = Chat(user_id)
+    await chat(matcher, chat_inst, args_text)
+
+
+@chatgpt_setting.handle()
+async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    user_id = event.user_id
+    if args_text == "":
         chat_setting[user_id] = None
-        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-        await chatgpt.finish("清除设定完成")
-    elif args_text.startswith("setting "):
-        message = args_text.split(" ", 1)[1]
-        chat_setting[user_id] = message
-        chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-        chat_inst = chat_data[user_id]
-        await chat(chat_inst, None)
-    elif args_text.startswith("single "):
-        message = args_text.split(" ", 1)[1]
-        if message == "":
-            await chatgpt.reject("内容不可为空")
-        chat_inst = Chat(user_id)
-        await chat(chat_inst, message)
+        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+        await chatgpt_setting.finish("清除设定完成")
     else:
-        if user_id not in chat_data:
-            chat_data[user_id] = Chat(user_id, chat_setting.get(user_id))
-        chat_inst = chat_data[user_id]
-        await chat(chat_inst, args_text)
+        chat_setting[user_id] = args_text
+        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+        chat_inst = chat_instance[user_id]
+        await chat(matcher, chat_inst, None)
+
+
+@chatgpt_reset.handle()
+async def _(event: MessageEvent):
+    user_id = event.user_id
+    chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+    await chatgpt_reset.finish("重置对话完成")
+
+
+@chatgpt_help.handle()
+async def _(event: MessageEvent):
+    await chatgpt_help.finish(__plugin_meta__.usage)
 
 
 def get_info_str(duration: float, usage: int, poped: bool) -> str:
@@ -79,14 +90,14 @@ def get_info_str(duration: float, usage: int, poped: bool) -> str:
     return info_str
 
 
-async def chat(chat_inst: Chat, message: Optional[str]):
+async def chat(matcher: Matcher, chat_inst: Chat, message: Optional[str]) -> None:
     if chat_inst.get_lock():
-        await chatgpt.reject("上次请求还未完成，请稍后再试或强制创建新会话: chat create")
-    await chatgpt.send("请求已发送，等待接口响应...")
+        await matcher.reject("上次请求还未完成，请稍后再试或强制刷新会话: chat reset")
+    await matcher.send("请求已发送，等待接口响应...")
     start_time = time.time()
     content, usage, poped = await chat_inst.chat(message)
     end_time = time.time()
     duration = end_time - start_time
     info_str = get_info_str(duration, usage, poped)
     result = MessageSegment.text(content) + MessageSegment.text("\n\n") + MessageSegment.text(info_str)
-    await chatgpt.finish(result, at_sender=True)
+    await matcher.finish(result)
