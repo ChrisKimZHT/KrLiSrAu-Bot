@@ -8,6 +8,11 @@ __plugin_meta__ = PluginMetadata(
     description="查询节假日信息",
     usage="""指令: moyu / 摸鱼
 用法: moyu - 查询节假日信息""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.3",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 moyu = on_command("moyu", aliases={"摸鱼"}, priority=1, block=True)

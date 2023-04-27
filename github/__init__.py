@@ -10,6 +10,11 @@ __plugin_meta__ = PluginMetadata(
     description="查询指定用户GitHub贡献图",
     usage="""指令: ghcontribute / ghc
 用法: ghcontribute <用户名> - 查询指定用户的GitHub贡献图""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.2",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 ghcontribute = on_command("ghcontribute", aliases={"ghc"}, priority=1, block=True)

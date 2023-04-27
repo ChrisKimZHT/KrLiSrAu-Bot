@@ -21,7 +21,12 @@ __plugin_meta__ = PluginMetadata(
     pop [front/back] - 删除最早/最晚的一次对话
     reset - 重置对话
     help - 查看帮助""",
-    config=Config
+    config=Config,
+    extra={
+        "authors": "ChrisKim",
+        "version": "2.0.2",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 chatgpt = on_command("chatgpt", aliases={"chat"}, priority=1, block=True)

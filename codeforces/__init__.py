@@ -10,6 +10,11 @@ __plugin_meta__ = PluginMetadata(
     description="查询Codeforces比赛",
     usage="""指令: codeforces / cf
 用法: codeforces <数量> - 查询最近的指定数量的比赛""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.1",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 codeforces = on_command("codeforces", aliases={"cf"}, priority=1, block=True)

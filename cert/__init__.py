@@ -10,6 +10,11 @@ __plugin_meta__ = PluginMetadata(
     description="查询网站SSL证书信息",
     usage="""指令: cert / ssl / 证书
 用法: cert <域名> - 查询指定域名的证书信息""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.1",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 cert = on_command("cert", aliases={"ssl", "证书"}, priority=1, block=True)

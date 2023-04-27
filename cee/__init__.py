@@ -9,6 +9,11 @@ __plugin_meta__ = PluginMetadata(
     description="查询高考倒计时",
     usage="""指令: cee / gk / 高考
 用法: cee <年份> - 查询指定年份高考倒计时""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.1",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 cee = on_command("cee", aliases={"gk", "高考"}, priority=1, block=True)

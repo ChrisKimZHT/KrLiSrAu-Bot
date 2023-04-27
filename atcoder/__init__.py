@@ -15,6 +15,11 @@ __plugin_meta__ = PluginMetadata(
     arc - 显示Regular类别
     agc - 显示Grand类别
     ahc - 显示Heuristic类别""",
+    extra={
+        "authors": "ChrisKim",
+        "version": "1.0.1",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 atcoder = on_command("atcoder", aliases={"atc"}, priority=1, block=True)

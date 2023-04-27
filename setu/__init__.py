@@ -14,7 +14,12 @@ __plugin_meta__ = PluginMetadata(
 用法: setu [标签...] [R18]
     [标签...] - 指定标签，多个标签用空格分隔
     [R18] - 指定是否为R18，默认为否""",
-    config=Config
+    config=Config,
+    extra={
+        "authors": "ChrisKim",
+        "version": "2.0.1",
+        "KrLiSrAu-Bot": True,
+    }
 )
 
 setu = on_command("setu", aliases={"涩图"}, priority=1, block=True)
