@@ -41,7 +41,7 @@ async def _(event: MessageEvent):
     result_other = ""
 
     for plugin in plugins:
-        if plugin.metadata.extra.get("KrLiSrAu-Bot") is True:
+        if plugin.metadata is not None and plugin.metadata.extra.get("KrLiSrAu-Bot") is True:
             result_chriskim += f"v{plugin.metadata.extra.get('version')} - {plugin.name}\n"
         else:
             result_other += f"{plugin.name}\n"
