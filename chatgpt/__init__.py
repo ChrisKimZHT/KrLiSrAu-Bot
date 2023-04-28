@@ -5,6 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .config import chatgpt_config, Config
 from .chat_class import Chat
+from .usage_info import get_usage_info
 from typing import Optional
 import time
 
@@ -20,11 +21,12 @@ __plugin_meta__ = PluginMetadata(
     len - 查看对话长度（一问一答算一次）
     pop [front/back] - 删除最早/最晚的一次对话
     reset - 重置对话
+    bill - 查看额度 
     help - 查看帮助""",
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.0.2",
+        "version": "2.0.3",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -35,6 +37,7 @@ chatgpt_setting = on_command(("chatgpt", "setting"), aliases={("chat", "setting"
 chatgpt_len = on_command(("chatgpt", "len"), aliases={("chat", "len")}, priority=1, block=True)
 chatgpt_pop = on_command(("chatgpt", "pop"), aliases={("chat", "pop")}, priority=1, block=True)
 chatgpt_reset = on_command(("chatgpt", "reset"), aliases={("chat", "reset")}, priority=1, block=True)
+chatgpt_bill = on_command(("chatgpt", "bill"), aliases={("chat", "bill")}, priority=1, block=True)
 chatgpt_help = on_command(("chatgpt", "help"), aliases={("chat", "help")}, priority=1, block=True)
 
 chat_instance = {}
@@ -115,6 +118,14 @@ async def _(event: MessageEvent):
     user_id = event.user_id
     chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
     await chatgpt_reset.finish("重置对话完成")
+
+
+@chatgpt_bill.handle()
+async def _(event: MessageEvent):
+    if chatgpt_config.klsa_bill_session == "":
+        await chatgpt_bill.finish("额度查询功能不可用")
+    result = await get_usage_info()
+    await chatgpt_bill.finish(result)
 
 
 @chatgpt_help.handle()
