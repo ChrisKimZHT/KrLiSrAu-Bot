@@ -20,10 +20,12 @@ setu [标签...] [R18]
 
 **结果：**
 
-> 迪奥娜 - 中午茶会
-> UID: 13693035
-> PID: 85599270 (p0)
-> URL: https://i.pximg.net/img-master/img/2020/11/11/11/50/10/85599270_p0_master1200.jpg
+```
+迪奥娜 - 中午茶会
+UID: 13693035
+PID: 85599270 (p0)
+URL: https://i.pximg.net/img-master/img/2020/11/11/11/50/10/85599270_p0_master1200.jpg
+```
 
 <img src="https://assets.zouht.com/img/md/KrLiSrAu-Bot-README-02.jpg" style="width: 384px;" />
 

@@ -18,16 +18,19 @@ codeforces <数量> - 查询最近的指定数量的比赛
 
 **结果：**
 
-> 【Codeforces比赛】
-> Codeforces Round 870 (Div. 2)
-> Type: CF
-> Duration: 120 (min)
-> Time: 2023/05/04(Thu) 22:35
-> 
-> Codeforces Round (Div. 1)
-> Type: CF
-> Duration: 120 (min)
-> Time: 2023/05/08(Mon) 20:05
+```
+【Codeforces比赛】
+Codeforces Round 870 (Div. 2)
+Type: CF
+Duration: 120 (min)
+Time: 2023/05/04(Thu) 22:35
+-------------------------
+Codeforces Round (Div. 1)
+Type: CF
+Duration: 120 (min)
+Time: 2023/05/08(Mon) 20:05
+-------------------------
+```
 
 
 ### 所需依赖

@@ -18,14 +18,16 @@ cert <域名> - 查询指定域名的证书信息
 
 **结果：**
 
-> 【证书查询】查询成功：
-> Server certificate:
-> subject: CN=www.zouht.com
-> start date: Apr 11 00:00:00 2023 GMT
-> expire date: Apr 10 23:59:59 2024 GMT
-> subjectAltName: host "www.zouht.com" matched cert's "www.zouht.com"
-> issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=Encryption Everywhere DV TLS CA - G1
-> SSL certificate verify ok.
+```
+【证书查询】查询成功：
+Server certificate:
+subject: CN=www.zouht.com
+start date: Apr 11 00:00:00 2023 GMT
+expire date: Apr 10 23:59:59 2024 GMT
+subjectAltName: host "www.zouht.com" matched cert's "www.zouht.com"
+issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=Encryption Everywhere DV TLS CA - G1
+SSL certificate verify ok.
+```
 
 ### 所需依赖
 

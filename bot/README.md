@@ -22,24 +22,26 @@ bot [选项]
 
 **结果：**
 
-> 【插件列表】
-> \> ChrisKim插件：
-> v1.0.0 - bot
-> v1.0.3 - moyu
-> v1.0.1 - atcoder
-> v1.0.2 - github
-> v2.0.3 - chatgpt
-> v1.0.1 - cert
-> v1.0.1 - cee
-> v2.0.1 - setu
-> v1.0.1 - codeforces
->
-> \> 其他插件：
-> nonebot_plugin_petpet
-> nonebot_plugin_imageutils
-> nonebot_plugin_apscheduler
-> nonebot_plugin_hikarisearch
-> nonebot_plugin_repeater
+```
+【插件列表】
+> ChrisKim插件：
+v1.0.0 - bot
+v1.0.3 - moyu
+v1.0.1 - atcoder
+v1.0.2 - github
+v2.0.3 - chatgpt
+v1.0.1 - cert
+v1.0.1 - cee
+v2.0.1 - setu
+v1.0.1 - codeforces
+
+> 其他插件：
+nonebot_plugin_petpet
+nonebot_plugin_imageutils
+nonebot_plugin_apscheduler
+nonebot_plugin_hikarisearch
+nonebot_plugin_repeater
+```
 
 #### 插件帮助
 
@@ -49,12 +51,14 @@ bot [选项]
 
 **结果：**
 
-> 涩图 - 发送随机涩图
-> 版本: v2.0.1
-> 指令: setu / 涩图
-> 用法: setu [标签...] [R18]
->   [标签...] - 指定标签，多个标签用空格分隔
->   [R18] - 指定是否为R18，默认为否
+```
+涩图 - 发送随机涩图
+版本: v2.0.1
+指令: setu / 涩图
+用法: setu [标签...] [R18]
+[标签...] - 指定标签，多个标签用空格分隔
+[R18] - 指定是否为R18，默认为否
+```
 
 #### [管理员功能] 执行 shell 指令
 
@@ -64,16 +68,18 @@ bot [选项]
 
 **结果：**
 
-> 执行结果：
-> total 24
-> -rw-r--r-- 1 root root 999 Apr  7 17:35 bot.py
-> drwxr-xr-x 4 root root   4 Apr  7 17:35 data
-> -rw-r--r-- 1 root root 628 Apr  7 17:35 docker-compose.yml
-> -rw-r--r-- 1 root root 563 Apr  7 17:36 Dockerfile
-> drwxr-xr-x 2 root root   3 Apr  7 17:36 \_\_pycache\_\_
-> -rw-r--r-- 1 root root 484 Apr  7 18:18 pyproject.toml
-> -rw-r--r-- 1 root root 253 Apr  7 17:36 README.md
-> drwxr-xr-x 3 root root   3 Apr  7 18:06 src
+```
+执行结果：
+total 24
+-rw-r--r-- 1 root root 999 Apr  7 17:35 bot.py
+drwxr-xr-x 4 root root   4 Apr  7 17:35 data
+-rw-r--r-- 1 root root 628 Apr  7 17:35 docker-compose.yml
+-rw-r--r-- 1 root root 563 Apr  7 17:36 Dockerfile
+drwxr-xr-x 2 root root   3 Apr  7 17:36 __pycache__
+-rw-r--r-- 1 root root 484 Apr  7 18:18 pyproject.toml
+-rw-r--r-- 1 root root 253 Apr  7 17:36 README.md
+drwxr-xr-x 3 root root   3 Apr  7 18:06 src
+```
 
 ### 所需依赖
 
