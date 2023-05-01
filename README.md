@@ -20,3 +20,15 @@
 | moyu       | 查询节假日信息               |
 | setu       | 基于 Lolicon API 的随机涩图  |
 
+### 安装方式
+
+首先根据 NoneBot2 官方文档创建机器人项目：https://nb2.baka.icu/docs/tutorial/application
+
+注意适配器使用 `nonebot-adapter-onebot-v11`，插件暂无适配其他适配器的计划。
+
+然后将插件放入项目的插件目录，一个文件夹代表一个插件，插件互相独立，可自行选择。
+
+然后查看插件目录下的 README.md 说明文件，使用 pip 安装所需依赖，然后根据说明在配置文件 .env.prod 中填写对应配置项。
+
+最后使用 `nb run` 运行机器人。
+
