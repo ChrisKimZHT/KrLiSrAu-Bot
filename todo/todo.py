@@ -6,22 +6,20 @@ from typing import Union
 driver = get_driver()
 
 data: dict = {}
-status: bool = True
+status: bool = False
 
 
 @driver.on_startup
 async def _load_data() -> None:
-    global data
+    global data, status
     data = read_data()
-    if "error" in data:
-        global status
-        status = False
     if len(data) == 0:
         data = {
             "private": {},
             "group": {}
         }
         write_data(data)
+    status = True
 
 
 @driver.on_shutdown
