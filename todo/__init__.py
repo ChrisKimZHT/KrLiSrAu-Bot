@@ -63,7 +63,8 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent]):
 {ele.get_name()}
 {ele.get_description()}
 """
-    message += "-" * 25
     if len(data) == 0:
         message += "无"
+    else:
+        message += "-" * 25
     await todo_list.finish(message)
