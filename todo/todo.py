@@ -49,9 +49,13 @@ async def add_group(group_id: int, todo: Todo):
 
 async def query_private(user_id: int) -> list:
     _check_init(user_id=user_id)
-    return data["private"][user_id]
+    todo_data = data["private"][user_id]
+    todo_data.sort(key=lambda x: x.timestamp)
+    return todo_data
 
 
 async def query_group(group_id: int) -> list:
     _check_init(group_id=group_id)
-    return data["group"][group_id]
+    todo_data = data["group"][group_id]
+    todo_data.sort(key=lambda x: x.timestamp)
+    return todo_data
