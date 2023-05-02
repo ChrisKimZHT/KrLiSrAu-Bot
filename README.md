@@ -19,6 +19,7 @@
 | github     | 查询指定用户 GitHub 贡献图   |
 | moyu       | 查询节假日信息               |
 | setu       | 基于 Lolicon API 的随机涩图  |
+| todo       | 待办事项管理                 |
 
 ### 安装方式
 
