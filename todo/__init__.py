@@ -64,7 +64,7 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args
         message = f"用户 {event.user_id} 的待办事项：\n"
     for ele in data:
         message += f"""{"-" * 25}
-{ele.get_timestr()}
+{ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
 {ele.get_name()}
 {ele.get_description()}
 """

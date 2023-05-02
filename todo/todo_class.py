@@ -21,3 +21,6 @@ class Todo:
 
     def is_expired(self) -> bool:
         return self.timestamp < time.time()
+
+    def get_timedelta(self) -> int:
+        return int(self.timestamp - time.time())
