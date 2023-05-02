@@ -3,6 +3,7 @@ import time
 
 class Todo:
     def __init__(self, name: str, description: str, timestamp: int):
+        self.tid = -1
         self.name = name
         self.description = description
         self.timestamp = timestamp
@@ -24,3 +25,9 @@ class Todo:
 
     def get_timedelta(self) -> int:
         return int(self.timestamp - time.time())
+
+    def set_tid(self, tid: int) -> None:
+        self.tid = tid
+
+    def get_tid(self) -> int:
+        return self.tid

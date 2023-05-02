@@ -43,10 +43,10 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], name
 
     new_todo = Todo(name, description, timestamp)
     if isinstance(event, GroupMessageEvent):
-        await add_group(event.group_id, new_todo)
+        tid = await add_group(event.group_id, new_todo)
     else:  # isinstance(event, PrivateMessageEvent)
-        await add_private(event.user_id, new_todo)
-    await todo_add.finish("添加成功")
+        tid = await add_private(event.user_id, new_todo)
+    await todo_add.finish(f"添加成功：{tid}")
 
 
 @todo_list.handle()
@@ -63,13 +63,14 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args
         data: list = await query_private(event.user_id, show_all)
         message = f"用户 {event.user_id} 的待办事项：\n"
     for ele in data:
-        message += f"""{"-" * 25}
-{ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
-{ele.get_name()}
-{ele.get_description()}
+        message += f"""{"=" * 25}
+编号: {ele.get_tid()}
+时间: {ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
+事项: {ele.get_name()}
+描述: {ele.get_description()}
 """
     if len(data) == 0:
         message += "无"
     else:
-        message += "-" * 25
+        message += "=" * 25
     await todo_list.finish(message)

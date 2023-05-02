@@ -16,7 +16,8 @@ async def _load_data() -> None:
     if len(data) == 0:
         data = {
             "private": {},
-            "group": {}
+            "group": {},
+            "tid": 0,
         }
         write_data(data)
     status = True
@@ -35,16 +36,26 @@ def _check_init(user_id: Union[int, None] = None, group_id: Union[int, None] = N
         data["group"][group_id] = []
 
 
-async def add_private(user_id: int, todo: Todo):
+def _acquire_tid() -> int:
+    tid = data["tid"]
+    data["tid"] += 1
+    return tid
+
+
+async def add_private(user_id: int, todo: Todo) -> int:
     _check_init(user_id=user_id)
+    todo.set_tid(_acquire_tid())
     data["private"][user_id].append(todo)
     await _save_data()
+    return todo.get_tid()
 
 
-async def add_group(group_id: int, todo: Todo):
+async def add_group(group_id: int, todo: Todo) -> int:
     _check_init(group_id=group_id)
+    todo.set_tid(_acquire_tid())
     data["group"][group_id].append(todo)
     await _save_data()
+    return todo.get_tid()
 
 
 async def query_private(user_id: int, show_all: bool = False) -> list:
