@@ -3,7 +3,7 @@ from nonebot.params import CommandArg, ArgPlainText
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, PrivateMessageEvent, MessageEvent, Bot
 from .todo_class import Todo
-from .todo import add_private, add_group, query_private, query_group
+from .todo import *
 from typing import Union
 import time
 
@@ -23,6 +23,9 @@ __plugin_meta__ = PluginMetadata(
 todo = on_command("todo", priority=1, block=True)
 todo_add = on_command(("todo", "add"), priority=1, block=True)
 todo_list = on_command(("todo", "list"), priority=1, block=True)
+todo_finish = on_command(("todo", "finish"), priority=1, block=True)
+todo_del = on_command(("todo", "del"), priority=1, block=True)
+todo_clear = on_command(("todo", "clear"), priority=1, block=True)
 
 
 @todo.handle()
@@ -64,7 +67,7 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args
         message = f"用户 {event.user_id} 的待办事项：\n"
     for ele in data:
         message += f"""{"=" * 25}
-编号: {ele.get_tid()}
+编号: {ele.get_tid()}{" [已过期]" if ele.is_expired() else ""}{" [已完成]" if ele.is_done() else ""}
 时间: {ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
 事项: {ele.get_name()}
 描述: {ele.get_description()}
@@ -74,3 +77,52 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args
     else:
         message += "=" * 25
     await todo_list.finish(message)
+
+
+@todo_finish.handle()
+async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    try:
+        tid = int(args_text)
+    except Exception as e:
+        await todo_finish.finish("编号错误：\n" + str(e))
+        return
+
+    if isinstance(event, GroupMessageEvent):
+        result = await finish_group(event.group_id, tid)
+    else:  # isinstance(event, PrivateMessageEvent)
+        result = await finish_private(event.user_id, tid)
+
+    if result:
+        await todo_finish.finish("操作成功")
+    else:
+        await todo_finish.finish("操作失败，未找到该编号的事项")
+
+
+@todo_del.handle()
+async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    try:
+        tid = int(args_text)
+    except Exception as e:
+        await todo_del.finish("编号错误：\n" + str(e))
+        return
+
+    if isinstance(event, GroupMessageEvent):
+        result = await del_group(event.group_id, tid)
+    else:
+        result = await del_private(event.user_id, tid)
+
+    if result:
+        await todo_del.finish("操作成功")
+    else:
+        await todo_del.finish("操作失败，未找到该编号的事项")
+
+
+@todo_clear.handle()
+async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent]):
+    if isinstance(event, GroupMessageEvent):
+        await clear_group(event.group_id)
+    else:
+        await clear_private(event.user_id)
+    await todo_clear.finish("操作成功")

@@ -4,6 +4,7 @@ import time
 class Todo:
     def __init__(self, name: str, description: str, timestamp: int):
         self.tid = -1
+        self.done = False
         self.name = name
         self.description = description
         self.timestamp = timestamp
@@ -31,3 +32,9 @@ class Todo:
 
     def get_tid(self) -> int:
         return self.tid
+
+    def set_done(self) -> None:
+        self.done = True
+
+    def is_done(self) -> bool:
+        return self.done

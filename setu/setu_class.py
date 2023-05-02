@@ -37,8 +37,8 @@ class Setu:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=api, json=data) as resp:
                 resp_dict = await resp.json()
-                if len(resp_dict["data"]):  # API返回长度>0
-                    return resp_dict["data"][0]
+                if len(resp_dict["_data"]):  # API返回长度>0
+                    return resp_dict["_data"][0]
                 return None
 
     async def get_data(self) -> bool:
