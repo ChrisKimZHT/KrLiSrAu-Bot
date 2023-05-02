@@ -50,12 +50,17 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], name
 
 
 @todo_list.handle()
-async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent]):
+async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    show_all = False
+    if args_text == "all":
+        show_all = True
+
     if isinstance(event, GroupMessageEvent):
-        data: list = await query_group(event.group_id)
+        data: list = await query_group(event.group_id, show_all)
         message = f"群组 {event.group_id} 的待办事项：\n"
     else:  # isinstance(event, PrivateMessageEvent)
-        data: list = await query_private(event.user_id)
+        data: list = await query_private(event.user_id, show_all)
         message = f"用户 {event.user_id} 的待办事项：\n"
     for ele in data:
         message += f"""{"-" * 25}

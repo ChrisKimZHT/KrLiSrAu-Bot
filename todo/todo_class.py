@@ -18,3 +18,6 @@ class Todo:
 
     def get_timestr(self) -> str:
         return time.strftime("%Y/%m/%d %H:%M", time.localtime(self.timestamp))
+
+    def is_expired(self) -> bool:
+        return self.timestamp < time.time()

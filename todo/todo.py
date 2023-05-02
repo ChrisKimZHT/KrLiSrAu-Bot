@@ -47,15 +47,19 @@ async def add_group(group_id: int, todo: Todo):
     await _save_data()
 
 
-async def query_private(user_id: int) -> list:
+async def query_private(user_id: int, show_all: bool = False) -> list:
     _check_init(user_id=user_id)
     todo_data = data["private"][user_id]
     todo_data.sort(key=lambda x: x.timestamp)
+    if not show_all:
+        todo_data = list(filter(lambda x: not x.is_expired(), todo_data))
     return todo_data
 
 
-async def query_group(group_id: int) -> list:
+async def query_group(group_id: int, show_all: bool = False) -> list:
     _check_init(group_id=group_id)
     todo_data = data["group"][group_id]
     todo_data.sort(key=lambda x: x.timestamp)
+    if not show_all:
+        todo_data = list(filter(lambda x: not x.is_expired(), todo_data))
     return todo_data
