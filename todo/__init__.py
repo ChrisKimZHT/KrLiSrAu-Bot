@@ -11,7 +11,13 @@ __plugin_meta__ = PluginMetadata(
     name="事项",
     description="管理待办事项",
     usage="""指令: todo
-用法: """,
+用法: todo [选项] <内容>
+    空 - 显示帮助
+    add - 添加待办事项
+    list [all] - 显示待办事项
+    finish <tid> - 标记待办事项为完成
+    del <tid> - 删除待办事项
+    clear - 清理所有已完成/过期的待办事项""",
     config=None,
     extra={
         "authors": "ChrisKim",
@@ -30,7 +36,7 @@ todo_clear = on_command(("todo", "clear"), priority=1, block=True)
 
 @todo.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
-    pass
+    todo.finish(__plugin_meta__.usage)
 
 
 @todo_add.got("name", prompt="输入事项名称")
