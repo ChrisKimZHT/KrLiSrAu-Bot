@@ -70,6 +70,7 @@ todo [选项] <内容>
 
 - nonebot2
 - nonebot-adapter-onebot
+- nonebot_plugin_localstore
 - (可选) nonebot_plugin_apscheduler
 
 ### 配置项目
