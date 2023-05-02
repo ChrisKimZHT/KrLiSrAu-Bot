@@ -17,4 +17,4 @@ class Todo:
         return self.timestamp
 
     def get_timestr(self) -> str:
-        return time.strftime("%Y-%m-%d %H:%M", time.localtime(self.timestamp))
+        return time.strftime("%Y/%m/%d %H:%M", time.localtime(self.timestamp))

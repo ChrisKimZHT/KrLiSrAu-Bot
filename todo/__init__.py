@@ -32,11 +32,11 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
 @todo_add.got("name", prompt="输入事项名称")
 @todo_add.got("description", prompt="输入事项描述")
-@todo_add.got("timestr", prompt="输入截止时间，格式：YYYY-MM-DD HH:MM")
+@todo_add.got("timestr", prompt="输入截止时间，格式：YYYY/MM/DD HH:MM")
 async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], name: str = ArgPlainText(),
             description: str = ArgPlainText(), timestr: str = ArgPlainText()):
     try:
-        timestamp = int(time.mktime(time.strptime(timestr, "%Y-%m-%d %H:%M")))
+        timestamp = int(time.mktime(time.strptime(timestr, "%Y/%m/%d %H:%M")))
     except Exception as e:
         await todo_add.finish("添加失败：\n" + str(e))
         return
