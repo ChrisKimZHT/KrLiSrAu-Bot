@@ -1,9 +1,10 @@
-from nonebot import on_command
+from nonebot import on_command, require, get_bot
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, PrivateMessageEvent, MessageEvent, Bot
 from .todo_class import Todo
 from .todo import *
+from .config import todo_config, Config
 from typing import Union
 import time
 
@@ -18,7 +19,7 @@ __plugin_meta__ = PluginMetadata(
     finish <tid> - 标记待办事项为完成
     del <tid> - 删除待办事项
     clear - 清理所有已完成/过期的待办事项""",
-    config=None,
+    config=Config,
     extra={
         "authors": "ChrisKim",
         "version": "1.0.0",
@@ -36,7 +37,7 @@ todo_clear = on_command(("todo", "clear"), priority=1, block=True)
 
 @todo.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
-    todo.finish(__plugin_meta__.usage)
+    await todo.finish(__plugin_meta__.usage)
 
 
 @todo_add.got("name", prompt="输入事项名称")
@@ -132,3 +133,42 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent]):
     else:
         await clear_private(event.user_id)
     await todo_clear.finish("操作成功")
+
+
+if todo_config.klsa_todo_schedule:
+    require("nonebot_plugin_apscheduler")
+    from nonebot_plugin_apscheduler import scheduler
+
+
+    @scheduler.scheduled_job("cron", hour=todo_config.klsa_todo_schedule_hour,
+                             minute=todo_config.klsa_todo_schedule_minute, id="todo")
+    async def _():
+        bot = get_bot()
+        for group in todo_config.klsa_todo_schedule_group:
+            message = f"【定时发送】群组 {group} 的待办事项：\n"
+            data: list = await query_group(group)
+            if len(data) == 0:
+                continue
+            for ele in data:
+                message += f"""{"=" * 25}
+编号: {ele.get_tid()}{" [已过期]" if ele.is_expired() else ""}{" [已完成]" if ele.is_done() else ""}
+时间: {ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
+事项: {ele.get_name()}
+描述: {ele.get_description()}
+"""
+            message += "=" * 25
+            await bot.call_api("send_group_msg", group_id=group, message=message)
+        for user in todo_config.klsa_todo_schedule_user:
+            message = f"【定时发送】用户 {user} 的待办事项：\n"
+            data: list = await query_private(user)
+            if len(data) == 0:
+                continue
+            for ele in data:
+                message += f"""{"=" * 25}
+编号: {ele.get_tid()}{" [已过期]" if ele.is_expired() else ""}{" [已完成]" if ele.is_done() else ""}
+时间: {ele.get_timestr()} ({round(abs(ele.get_timedelta()) / 86400, 1)} 天{"前" if ele.is_expired() else "后"})
+事项: {ele.get_name()}
+描述: {ele.get_description()}
+"""
+            message += "=" * 25
+            await bot.call_api("send_private_msg", user_id=user, message=message)
