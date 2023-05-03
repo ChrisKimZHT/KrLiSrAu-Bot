@@ -90,11 +90,11 @@ def mo_yu() -> str:
     # 最终文字组合
     text = f"【摸鱼办】{today.day} 日{greet}！今天是{week_day_dict[today.weekday()]}。\n" \
            f"{moyu_config.klsa_moyu_str_1}\n\n"
-    for i in range(0, 7):
-        if date_list[i]["dist"] == 0:
-            text = text + f"★ 今天就是{date_list[i]['title']}！\n"
+    for date in date_list:
+        if date["dist"] == 0:
+            text = text + f"★ 今天就是{date['title']}！\n"
         else:
             text = text + \
-                   f"☆ 距离{date_list[i]['title']}还有：{date_list[i]['dist']} 天\n"
+                   f"☆ 距离{date['title']}还有：{date['dist']} 天\n"
     text = text + f"\n{moyu_config.klsa_moyu_str_2}"
     return text
