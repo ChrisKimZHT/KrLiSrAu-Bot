@@ -1,9 +1,9 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, Bot
+from nonebot.adapters.onebot.v11.helpers import autorevoke_send
 from nonebot.plugin import PluginMetadata
-from .setu_class import Setu
-from .withdraw import add_withdraw_job
+from .setu_class import Setu, setu_config
 from .cooldown import check_cd, update_cd
 from .config import setu_config, Config
 
@@ -55,7 +55,6 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     try:
         if (my_setu.r18 and setu_config.klsa_setu_send_nsfw) or (not my_setu.r18 and setu_config.klsa_setu_send_sfw):
             message = await my_setu.pic_message(setu_config.klsa_setu_obfuscate)
-            pic_msginfo = await setu.send(message)
-            await add_withdraw_job(bot, **pic_msginfo)
+            await autorevoke_send(bot, event, message=message, revoke_interval=setu_config.klsa_setu_withdraw_interval)
     except Exception as e:
         await setu.finish(f"发送图片错误\n{e}", at_sender=True)
