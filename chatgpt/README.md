@@ -119,12 +119,13 @@ OpenAI 接口将会对历史对话重复计费，因此如果没有连续对话�
 
 ### 配置项目
 
-| 键名                  | 描述                | 类型  | 默认值                                                 |
-| --------------------- | ------------------- | ----- | ------------------------------------------------------ |
-| klsa_chat_api_url     | ChatGPT API 地址    | str   | https://api.openai.com/v1/chat/completions             |
-| klsa_chat_api_key     | OpenAI Secret Key   | str   |                                                        |
-| klsa_chat_model       | 使用的模型名称      | str   | gpt-3.5-turbo                                          |
-| klsa_chat_token_limit | token 限制          | int   | 1024                                                   |
-| klsa_chat_kt_cost     | 每 1000 tokens 费用 | float | -1                                                     |
-| klsa_bill_api_url     | 查询额度的 API 地址 | str   | https://api.openai.com/dashboard/billing/credit_grants |
-| klsa_bill_session     | OpenAI Session Key  | str   |                                                        |
+| 键名                   | 描述                | 类型  | 默认值                                                 |
+| ---------------------- | ------------------- | ----- | ------------------------------------------------------ |
+| klsa_chat_api_url      | ChatGPT API 地址    | str   | https://api.openai.com/v1/chat/completions             |
+| klsa_chat_api_key      | OpenAI Secret Key   | str   |                                                        |
+| klsa_chat_model        | 使用的模型名称      | str   | gpt-3.5-turbo                                          |
+| klsa_chat_token_limit  | token 限制          | int   | 1024                                                   |
+| klsa_chat_kt_cost      | 每 1000 tokens 费用 | float | -1                                                     |
+| klsa_chat_cooldown     | 冷却时间            | int   | 0                                                      |
+| klsa_chat_bill_api_url | 查询额度的 API 地址 | str   | https://api.openai.com/dashboard/billing/credit_grants |
+| klsa_chat_bill_session | OpenAI Session Key  | str   |                                                        |
