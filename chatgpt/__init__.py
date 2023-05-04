@@ -1,5 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
+from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
@@ -26,7 +27,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.0.3",
+        "version": "2.0.4",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -44,7 +45,13 @@ chat_instance = {}
 chat_setting = {}
 
 
-@chatgpt.handle()
+@chatgpt.handle(parameterless=[
+    Cooldown(
+        cooldown=chatgpt_config.klsa_chat_cooldown,
+        prompt="冷却时间中",
+        isolate_level=CooldownIsolateLevel.USER
+    )
+])
 async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
@@ -56,7 +63,13 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
     await chat(matcher, chat_inst, args_text)
 
 
-@chatgpt_single.handle()
+@chatgpt_single.handle(parameterless=[
+    Cooldown(
+        cooldown=chatgpt_config.klsa_chat_cooldown,
+        prompt="冷却时间中",
+        isolate_level=CooldownIsolateLevel.USER
+    )
+])
 async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id

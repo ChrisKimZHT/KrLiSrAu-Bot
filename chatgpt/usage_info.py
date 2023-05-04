@@ -3,9 +3,9 @@ from .config import chatgpt_config
 
 
 async def _request_api() -> dict:
-    api = chatgpt_config.klsa_bill_api_url
+    api = chatgpt_config.klsa_chat_bill_api_url
     headers = {
-        "Authorization": "Bearer " + chatgpt_config.klsa_bill_session
+        "Authorization": "Bearer " + chatgpt_config.klsa_chat_bill_session
     }
     async with aiohttp.ClientSession() as session:
         async with session.get(url=api, headers=headers) as resp:
