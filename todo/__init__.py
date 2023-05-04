@@ -22,7 +22,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -146,7 +146,7 @@ if todo_config.klsa_todo_schedule:
         bot = get_bot()
         for group in todo_config.klsa_todo_schedule_group:
             message = f"【定时发送】群组 {group} 的待办事项：\n"
-            data: list = await query_group(group)
+            data: list = await query_group(int(group))
             if len(data) == 0:
                 continue
             for ele in data:
@@ -160,7 +160,7 @@ if todo_config.klsa_todo_schedule:
             await bot.call_api("send_group_msg", group_id=group, message=message)
         for user in todo_config.klsa_todo_schedule_user:
             message = f"【定时发送】用户 {user} 的待办事项：\n"
-            data: list = await query_private(user)
+            data: list = await query_private(int(user))
             if len(data) == 0:
                 continue
             for ele in data:
