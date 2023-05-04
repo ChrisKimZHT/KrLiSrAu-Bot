@@ -1,10 +1,9 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, Bot
-from nonebot.adapters.onebot.v11.helpers import autorevoke_send
+from nonebot.adapters.onebot.v11.helpers import autorevoke_send, Cooldown, CooldownIsolateLevel
 from nonebot.plugin import PluginMetadata
 from .setu_class import Setu, setu_config
-from .cooldown import check_cd, update_cd
 from .config import setu_config, Config
 
 __plugin_meta__ = PluginMetadata(
@@ -17,7 +16,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.0.1",
+        "version": "2.0.2",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -25,13 +24,14 @@ __plugin_meta__ = PluginMetadata(
 setu = on_command("setu", aliases={"涩图"}, priority=1, block=True)
 
 
-@setu.handle()
+@setu.handle(parameterless=[
+    Cooldown(
+        cooldown=setu_config.klsa_setu_cooldown_time,
+        prompt="冷却时间中",
+        isolate_level=CooldownIsolateLevel.USER
+    )
+])
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
-    # 冷却处理器
-    if not await check_cd(event.user_id):
-        await setu.finish("冷却时间中", at_sender=True)
-    await update_cd(event.user_id)
-
     # 标签处理器
     tags = args.extract_plain_text().split(" ")
     if len(tags) == 0:
