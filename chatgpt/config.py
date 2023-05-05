@@ -8,7 +8,8 @@ class Config(BaseModel):
     klsa_chat_cooldown: int = 0
     klsa_chat_model: str = "gpt-3.5-turbo"
     klsa_chat_token_limit: int = 1024
-    klsa_chat_kt_cost: float = -1
+    klsa_chat_prompt_token_cost: float = -1
+    klsa_chat_completion_token_cost: float = -1
     klsa_chat_bill_api_url: str = "https://api.openai.com/dashboard/billing/credit_grants"
     klsa_chat_bill_session: str = ""
 

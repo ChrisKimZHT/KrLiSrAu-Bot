@@ -108,14 +108,14 @@ class Chat:
         """
         return len(self.messages) // 2
 
-    async def chat(self, message: Optional[str]) -> (str, int, bool):
+    async def chat(self, message: Optional[str]) -> (str, (int, int), bool):
         """
         进行一次对话
         :param message: 用户的消息，若为None则代表进行预设初始化
         :return: (回答内容, 消耗token数量, 是否删除了最早的一次对话)
         """
         content = ""  # 回答内容
-        usage = 0  # 消耗token数量
+        usage = (0, 0)  # 消耗token数量
         poped = False  # 是否删除了最早的一次对话
 
         if self.lock:
@@ -141,14 +141,14 @@ class Chat:
 
             try:
                 content = resp["choices"][0]["message"]["content"]
-                usage = resp["usage"]["total_tokens"]
+                usage = (resp["usage"]["prompt_tokens"], resp["usage"]["completion_tokens"])
             except Exception as e:
                 content = f"解析响应错误: {e}"
                 self.messages.pop()  # 若错误则还原
                 raise
 
             # 如果达到token限制，则删除最早的一次对话
-            if usage >= chatgpt_config.klsa_chat_token_limit and self.history_len():
+            if resp["usage"]["total_tokens"] >= chatgpt_config.klsa_chat_token_limit and self.history_len():
                 self.pop_front()
                 poped = True
 
