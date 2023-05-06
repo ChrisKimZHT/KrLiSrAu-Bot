@@ -27,7 +27,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.1.0",
+        "version": "2.1.1",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -146,7 +146,7 @@ async def _(event: MessageEvent):
     await chatgpt_help.finish(__plugin_meta__.usage)
 
 
-def get_info_str(duration: float, usage: tuple[int, int], poped: bool) -> str:
+def get_info_str(duration: float, usage: (int, int), poped: bool) -> str:
     info_str = "计算耗时: %.2f sec\n单位数量: %d token(s)" % (duration, usage[0] + usage[1])
     if chatgpt_config.klsa_chat_prompt_token_cost != -1 and chatgpt_config.klsa_chat_completion_token_cost != -1:
         info_str += "\n消费金额: $%.6f" % (chatgpt_config.klsa_chat_prompt_token_cost * usage[
