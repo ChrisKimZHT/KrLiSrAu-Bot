@@ -146,24 +146,16 @@ async def _(event: MessageEvent):
     await chatgpt_help.finish(__plugin_meta__.usage)
 
 
-def get_info_str(duration: float, usage: (int, int), poped: bool) -> str:
-    info_str = "计算耗时: %.2f sec\n单位数量: %d token(s)" % (duration, usage[0] + usage[1])
-    if chatgpt_config.klsa_chat_prompt_token_cost != -1 and chatgpt_config.klsa_chat_completion_token_cost != -1:
-        info_str += "\n消费金额: $%.6f" % (chatgpt_config.klsa_chat_prompt_token_cost * usage[
-            0] / 1000 + chatgpt_config.klsa_chat_completion_token_cost * usage[1] / 1000)
-    if poped:
-        info_str += "\n[!] 最早的一次对话被删除"
-    return info_str
-
-
 async def chat(matcher: Matcher, chat_inst: Chat, message: Optional[str]) -> None:
     if chat_inst.get_lock():
         await matcher.reject("上次请求还未完成，请稍后再试或强制刷新会话: chat reset")
     await matcher.send("请求已发送，等待接口响应...")
-    start_time = time.time()
-    content, usage, poped = await chat_inst.chat(message)
-    end_time = time.time()
-    duration = end_time - start_time
-    info_str = get_info_str(duration, usage, poped)
-    result = MessageSegment.text(content) + MessageSegment.text("\n\n") + MessageSegment.text(info_str)
+    chat_result = await chat_inst.chat(message)
+    if chat_result.get_error():
+        result = MessageSegment.text("失败 > ") + \
+                 MessageSegment.text(chat_result.get_content_str())
+    else:
+        result = MessageSegment.text(chat_result.get_content_str()) + \
+                 MessageSegment.text("\n\n") + \
+                 MessageSegment.text(chat_result.get_info_str())
     await matcher.finish(result)

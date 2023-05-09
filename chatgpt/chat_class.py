@@ -4,6 +4,83 @@ from .config import chatgpt_config
 from typing import Optional
 
 
+class ChatResult:
+    def __init__(self):
+        self.is_error = False
+        self.create_time = int(time.time())
+        self.finish_time = 0
+        self.content = ""
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.poped = False
+        self.original_resp = None
+
+    def set_content(self, resp: dict) -> None:
+        """
+        写入内容
+        :param resp: OpenAI API响应
+        :return:
+        """
+        self.finish_time = int(time.time())
+        self.original_resp = resp
+        self.content = resp["choices"][0]["message"]["content"]
+        self.prompt_tokens = resp["usage"]["prompt_tokens"]
+        self.completion_tokens = resp["usage"]["completion_tokens"]
+        if resp["usage"]["total_tokens"] >= chatgpt_config.klsa_chat_token_limit:
+            self.poped = True
+
+    def set_error(self, errstr: str) -> None:
+        """
+        设置为错误
+        :param errstr: 错误信息
+        :return:
+        """
+        self.is_error = True
+        self.content = errstr
+
+    def is_poped(self) -> bool:
+        """
+        获得是否因为超过额度而被删除
+        :return: 是否因为超过额度而被删除
+        """
+        return self.poped
+
+    def get_error(self) -> bool:
+        """
+        获得是否为错误
+        :return: 是否为错误
+        """
+        return self.is_error
+
+    def get_original_resp(self) -> dict:
+        """
+        获得原始的OpenAI API响应
+        :return: OpenAI API响应
+        """
+        return self.original_resp
+
+    def get_content_str(self) -> str:
+        """
+        获得回应内容
+        :return: 回答内容
+        """
+        return self.content
+
+    def get_info_str(self) -> str:
+        """
+        获得请求详情
+        :return: 请求详情字符串
+        """
+        info_str = "计算耗时: %.2f sec\n单位数量: %d token(s)" % (
+            self.finish_time - self.create_time, self.prompt_tokens + self.completion_tokens)
+        if chatgpt_config.klsa_chat_prompt_token_cost != -1 and chatgpt_config.klsa_chat_completion_token_cost != -1:
+            info_str += "\n消费金额: $%.6f" % (chatgpt_config.klsa_chat_prompt_token_cost * self.prompt_tokens / 1000 +
+                                               chatgpt_config.klsa_chat_completion_token_cost * self.completion_tokens / 1000)
+        if self.poped:
+            info_str += "\n[!] 最早的一次对话被删除"
+        return info_str
+
+
 class Chat:
     def __init__(self, user: int, setting: str = None, model: str = chatgpt_config.klsa_chat_model):
         self.user = user
@@ -108,26 +185,24 @@ class Chat:
         """
         return len(self.messages) // 2
 
-    async def chat(self, message: Optional[str]) -> (str, (int, int), bool):
+    async def chat(self, message: Optional[str]) -> ChatResult:
         """
         进行一次对话
         :param message: 用户的消息，若为None则代表进行预设初始化
-        :return: (回答内容, 消耗token数量, 是否删除了最早的一次对话)
+        :return: ChatResult对象
         """
-        content = ""  # 回答内容
-        usage = (0, 0)  # 消耗token数量
-        poped = False  # 是否删除了最早的一次对话
+        chat_result = ChatResult()
 
         if self.lock:
-            content = "上次请求还未完成，请稍后再试"
-            return content, usage, poped
+            chat_result.set_error("上次请求还未完成，请稍后再试")
+            return chat_result
 
         try:
             self.lock = True
 
             if message is None:
                 if self.setting is None:
-                    content = "若要初始化预设，请先设定预设"
+                    chat_result.set_error("若要初始化预设，请先设定预设")
                     raise
             else:
                 self._append_user_message(message)
@@ -135,28 +210,26 @@ class Chat:
             try:
                 resp = await self._request_api()
             except Exception as e:
-                content = f"网络请求错误: {e}"
+                chat_result.set_error(f"网络请求错误: {e}")
                 self.messages.pop()  # 若错误则还原
                 raise
 
             try:
-                content = resp["choices"][0]["message"]["content"]
-                usage = (resp["usage"]["prompt_tokens"], resp["usage"]["completion_tokens"])
+                chat_result.set_content(resp)
             except Exception as e:
-                content = f"解析响应错误: {e}"
+                chat_result.set_error(f"解析响应错误: {e}")
                 self.messages.pop()  # 若错误则还原
                 raise
 
             # 如果达到token限制，则删除最早的一次对话
-            if resp["usage"]["total_tokens"] >= chatgpt_config.klsa_chat_token_limit and self.history_len():
+            if chat_result.is_poped():
                 self.pop_front()
-                poped = True
 
             # 如果为预设初始化，则设置预设回复
             if message is None:
-                self.respose_to_setting = content
+                self.respose_to_setting = chat_result.get_content_str()
             else:
-                self._append_assistant_message(content)
+                self._append_assistant_message(chat_result.get_content_str())
         finally:
             self.lock = False
-            return content, usage, poped
+            return chat_result
