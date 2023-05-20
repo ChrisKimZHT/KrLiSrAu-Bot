@@ -20,6 +20,7 @@
 | moyu       | 查询节假日信息               |
 | setu       | 基于 Lolicon API 的随机涩图  |
 | todo       | 待办事项管理                 |
+| whuteb     | 武理电费                     |
 
 ### 安装方式
 
