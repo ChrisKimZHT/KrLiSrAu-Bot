@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
 from .config import Config, whuteb_config
 from .query_data import query_data
-from .statistic import update_statistic, stat_figure
+from .statistic import update_statistic, stat_figure, stat_text
 
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
@@ -58,13 +58,13 @@ async def query(matcher: Matcher):
 
 @eb_stat.handle()
 async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
-    # arg_text = args.extract_plain_text()
-    # if arg_text == "refresh":
-    #     await update_statistic()
-    #     await matcher.finish("刷新成功")
-    #     return
-    fig = stat_figure()
-    await matcher.finish(MessageSegment.image(fig))
+    arg_text = args.extract_plain_text()
+    if arg_text == "text":
+        txt = stat_text()
+        await matcher.finish(txt)
+    else:
+        fig = stat_figure()
+        await matcher.finish(MessageSegment.image(fig))
 
 
 @scheduler.scheduled_job("cron", id="update_stat", hour="12", minute="0", second="0")

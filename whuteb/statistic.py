@@ -46,3 +46,11 @@ def stat_figure() -> BytesIO:
     result = BytesIO()
     fig.savefig(result, format="png")
     return result
+
+
+def stat_text() -> str:
+    result = ""
+    data_list: list = read_data()
+    for data in data_list:
+        result += f"{time.strftime('%m-%d', time.localtime(data['time']))} | {data['remain']} kW·h\n"
+    return result
