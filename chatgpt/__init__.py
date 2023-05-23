@@ -28,7 +28,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.2.0",
+        "version": "2.3.0",
         "KrLiSrAu-Bot": True,
     }
 )
