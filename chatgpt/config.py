@@ -12,6 +12,7 @@ class Config(BaseModel):
     klsa_chat_completion_token_cost: float = -1
     klsa_chat_bill_api_url: str = "https://api.openai.com/dashboard/billing/credit_grants"
     klsa_chat_bill_session: str = ""
+    klsa_chat_exec_prompt: str = ""
 
 
 driver = get_driver()
