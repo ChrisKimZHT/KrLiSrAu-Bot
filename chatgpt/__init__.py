@@ -1,6 +1,7 @@
-from nonebot import on_command
-from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
+from nonebot import on_command, Bot
+from nonebot.adapters.onebot.v11 import MessageEvent, PrivateMessageEvent, GroupMessageEvent, MessageSegment, Message
 from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel
+from nonebot.message import handle_event
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
@@ -8,7 +9,7 @@ from .config import chatgpt_config, Config
 from .chat_class import ChatInst, ChatUser, ChatResult
 from .usage_info import get_usage_info
 from .storage_manage import get_chat_user
-from typing import Optional
+from typing import Optional, Union
 
 __plugin_meta__ = PluginMetadata(
     name="ChatGPT",
@@ -23,12 +24,13 @@ __plugin_meta__ = PluginMetadata(
     preset - 查看预设列表
     preset add <预设内容> - 添加预设
     preset del <预设ID> - 删除预设
+    exec <内容> - 使用ChatGPT调用其他机器人功能
     bill - 查看额度 
     help - 查看帮助""",
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.2.0",
+        "version": "2.3.0",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -45,6 +47,7 @@ chatgpt_preset_add = on_command(("chatgpt", "preset", "add"), aliases={("chat", 
                                 priority=1, block=True)
 chatgpt_preset_del = on_command(("chatgpt", "preset", "del"), aliases={("chat", "preset", "del")},
                                 priority=1, block=True)
+chatgpt_exec = on_command(("chatgpt", "exec"), aliases={("chat", "exec")}, priority=1, block=True)
 
 
 @chatgpt.handle(parameterless=[
@@ -118,9 +121,9 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     chat_user: ChatUser = get_chat_user(user_id)
     res: Optional[ChatResult] = await chat_user.reset_instance(preset_idx)
     if res is None:
-        await chatgpt_reset.finish("重置对话完成")
+        await chatgpt_reset.finish("无预设重置对话完成")
     else:
-        await chatgpt_reset.finish(f"使用预设{preset_idx}重置对话完成：\n" + res.get_content_str())
+        await chatgpt_reset.finish(f"使用预设 {preset_idx} 重置对话完成：\n" + res.get_content_str())
 
 
 @chatgpt_bill.handle()
@@ -158,7 +161,7 @@ async def _(event: MessageEvent):
     preset_list = chat_user.get_presets()
     result = f"预设列表：\n{'=' * 25}\n"
     for i, preset in enumerate(preset_list):
-        result += f"{i}: {preset[:20]}\n{'=' * 25}\n"
+        result += f"{i}: {preset[:20]}{'...' if len(preset) > 20 else ''}\n{'=' * 25}\n"
     await chatgpt_preset.finish(result)
 
 
@@ -183,3 +186,47 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     chat_user: ChatUser = get_chat_user(user_id)
     chat_user.del_presets(preset_idx)
     await chatgpt_preset_del.finish("删除预设完成")
+
+
+@chatgpt_exec.handle()
+async def _(bot: Bot, event: Union[PrivateMessageEvent, GroupMessageEvent], args: Message = CommandArg()):
+    if chatgpt_config.klsa_chat_exec_prompt == "":
+        await chatgpt_exec.finish("执行功能不可用，请正确配置 klsa_chat_exec_prompt")
+    args_text = args.extract_plain_text()
+    debug = False
+    if args_text.startswith("debug "):
+        debug = True
+        args_text = args_text[6:]
+    await chatgpt_exec.send("请求已发送，等待接口响应...")
+    chat_msg = chatgpt_config.klsa_chat_exec_prompt + args_text  # 输入消息
+    chat_inst = ChatInst(event.user_id)  # 获取对话实例
+    chat_result = await chat_inst.chat(chat_msg)  # 调用对话接口
+    chat_resp = chat_result.get_content_str()  # 提取回复消息
+    if debug:
+        await chatgpt_exec.send("[debug] ChatGPT返回的信息为：\n" + chat_resp)
+    if isinstance(event, PrivateMessageEvent):
+        new_event = PrivateMessageEvent(time=event.time,
+                                        self_id=event.self_id,
+                                        post_type=event.post_type,
+                                        sub_type=event.sub_type,
+                                        user_id=event.user_id,
+                                        message_type=event.message_type,
+                                        message_id=event.message_id,
+                                        message=chat_resp,
+                                        raw_message=chat_resp,
+                                        font=event.font,
+                                        sender=event.sender)
+    else:
+        new_event = GroupMessageEvent(time=event.time,
+                                      self_id=event.self_id,
+                                      post_type=event.post_type,
+                                      sub_type=event.sub_type,
+                                      user_id=event.user_id,
+                                      message_type=event.message_type,
+                                      message_id=event.message_id,
+                                      message=chat_resp,
+                                      raw_message=chat_resp,
+                                      font=event.font,
+                                      sender=event.sender,
+                                      group_id=event.group_id)
+    await handle_event(bot, new_event)
