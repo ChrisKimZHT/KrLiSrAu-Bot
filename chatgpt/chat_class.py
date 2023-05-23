@@ -5,6 +5,10 @@ from typing import Optional
 
 
 class ChatResult:
+    """
+    对话结果
+    """
+
     def __init__(self):
         self.is_error = False
         self.create_time = int(time.time())
@@ -81,13 +85,18 @@ class ChatResult:
         return info_str
 
 
-class Chat:
+class ChatInst:
+    """
+    对话实例
+    """
+
     def __init__(self, user: int, model: str = chatgpt_config.klsa_chat_model):
         self.user = user
         self.model = model
         self.messages = []
         self.create_time = time.time()
         self.lock = False
+        self.preset = []
 
     async def _request_api(self) -> dict:
         """
@@ -97,7 +106,7 @@ class Chat:
         api = chatgpt_config.klsa_chat_api_url
         data = {
             "model": self.model,
-            "messages": self.messages,
+            "messages": self.preset + self.messages,
         }
         headers = {
             "Authorization": "Bearer " + chatgpt_config.klsa_chat_api_key
@@ -127,6 +136,13 @@ class Chat:
             "role": "user",
             "content": message,
         })
+
+    def get_message_list(self) -> list:
+        """
+        获得消息列表
+        :return: 消息列表
+        """
+        return self.messages
 
     def get_lock(self) -> bool:
         """
@@ -164,6 +180,44 @@ class Chat:
         """
         return len(self.messages) // 2
 
+    async def init_preset(self, preset: str) -> ChatResult:
+        chat_result = ChatResult()
+
+        if self.lock:
+            chat_result.set_error("上次请求还未完成，请稍后再试")
+            return chat_result
+
+        self.preset.append({
+            "role": "user",
+            "content": preset,
+        })
+
+        try:
+            self.lock = True
+
+            try:
+                resp = await self._request_api()
+            except Exception as e:
+                chat_result.set_error(f"网络请求错误: {e}")
+                self.preset.pop()  # 若错误则还原
+                raise
+
+            try:
+                chat_result.set_content(resp)
+            except Exception as e:
+                chat_result.set_error(f"解析响应错误: {e}")
+                self.preset.pop()  # 若错误则还原
+                raise
+
+            self.preset.append({
+                "role": "assistant",
+                "content": chat_result.get_content_str(),
+            })
+
+        finally:
+            self.lock = False
+            return chat_result
+
     async def chat(self, message: str) -> ChatResult:
         """
         进行一次对话
@@ -199,6 +253,61 @@ class Chat:
             if chat_result.is_poped():
                 self.pop_front()
 
+            self._append_assistant_message(chat_result.get_content_str())
+
         finally:
             self.lock = False
             return chat_result
+
+
+class ChatUser:
+    """
+    对话用户
+    """
+
+    def __init__(self, user: int):
+        self.user = user
+        self.instance = ChatInst(user)
+        self.preset = []
+
+    def get_instance(self) -> ChatInst:
+        """
+        获得对话实例
+        :return: 对话实例
+        """
+        return self.instance
+
+    async def reset_instance(self, preset_idx: int = -1) -> Optional[ChatResult]:
+        """
+        重置对话实例
+        :param preset_idx: 预设索引
+        :return: ChatResult对象
+        """
+        self.instance = ChatInst(self.user)
+        if 0 <= preset_idx < len(self.preset):
+            return await self.instance.init_preset(self.preset[preset_idx])
+        return
+
+    def add_presets(self, preset: str) -> None:
+        """
+        添加预设
+        :param preset: 预设文字
+        :return:
+        """
+        self.preset.append(preset)
+
+    def del_presets(self, idx: int) -> None:
+        """
+        删除预设
+        :param idx: 预设索引
+        :return:
+        """
+        if 0 <= idx < len(self.preset):
+            self.preset.pop(idx)
+
+    def get_presets(self) -> list:
+        """
+        获得预设
+        :return: 预设列表
+        """
+        return self.preset

@@ -5,7 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .config import chatgpt_config, Config
-from .chat_class import Chat
+from .chat_class import ChatInst
 from .usage_info import get_usage_info
 from typing import Optional
 
@@ -53,7 +53,7 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
     if args_text == "":
         await chatgpt.finish(__plugin_meta__.usage)
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id)
+        chat_instance[user_id] = ChatInst(user_id)
     chat_inst = chat_instance[user_id]
     await chat(matcher, chat_inst, args_text)
 
@@ -70,7 +70,7 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
     user_id = event.user_id
     if args_text == "":
         await chatgpt_single.reject("内容不可为空")
-    chat_inst = Chat(user_id)
+    chat_inst = ChatInst(user_id)
     await chat(matcher, chat_inst, args_text)
 
 
@@ -78,8 +78,8 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
 async def _(event: MessageEvent):
     user_id = event.user_id
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id)
-    chat_inst: Chat = chat_instance[user_id]
+        chat_instance[user_id] = ChatInst(user_id)
+    chat_inst: ChatInst = chat_instance[user_id]
     await chatgpt_len.finish(f"当前对话长度为{chat_inst.history_len()}")
 
 
@@ -88,8 +88,8 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id)
-    chat_inst: Chat = chat_instance[user_id]
+        chat_instance[user_id] = ChatInst(user_id)
+    chat_inst: ChatInst = chat_instance[user_id]
     if args_text == "front":
         poped = chat_inst.pop_front()
         if poped:
@@ -109,7 +109,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 @chatgpt_reset.handle()
 async def _(event: MessageEvent):
     user_id = event.user_id
-    chat_instance[user_id] = Chat(user_id)
+    chat_instance[user_id] = ChatInst(user_id)
     await chatgpt_reset.finish("重置对话完成")
 
 
@@ -126,7 +126,7 @@ async def _(event: MessageEvent):
     await chatgpt_help.finish(__plugin_meta__.usage)
 
 
-async def chat(matcher: Matcher, chat_inst: Chat, message: Optional[str]) -> None:
+async def chat(matcher: Matcher, chat_inst: ChatInst, message: Optional[str]) -> None:
     if chat_inst.get_lock():
         await matcher.reject("上次请求还未完成，请稍后再试或强制刷新会话: chat reset")
     await matcher.send("请求已发送，等待接口响应...")
