@@ -8,7 +8,6 @@ from .config import chatgpt_config, Config
 from .chat_class import Chat
 from .usage_info import get_usage_info
 from typing import Optional
-import time
 
 __plugin_meta__ = PluginMetadata(
     name="ChatGPT",
@@ -17,8 +16,6 @@ __plugin_meta__ = PluginMetadata(
 用法: chatgpt [选项] <内容>
     <内容> - 进行连续对话
     single <内容> - 进行一次性对话
-    setting - 清除对话预设
-    setting <内容> - 设置对话预设（会立即初始化）
     len - 查看对话长度（一问一答算一次）
     pop [front/back] - 删除最早/最晚的一次对话
     reset - 重置对话
@@ -27,14 +24,13 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.1.1",
+        "version": "2.2.0",
         "KrLiSrAu-Bot": True,
     }
 )
 
 chatgpt = on_command("chatgpt", aliases={"chat"}, priority=1, block=True)
 chatgpt_single = on_command(("chatgpt", "single"), aliases={("chat", "single")}, priority=1, block=True)
-chatgpt_setting = on_command(("chatgpt", "setting"), aliases={("chat", "setting")}, priority=1, block=True)
 chatgpt_len = on_command(("chatgpt", "len"), aliases={("chat", "len")}, priority=1, block=True)
 chatgpt_pop = on_command(("chatgpt", "pop"), aliases={("chat", "pop")}, priority=1, block=True)
 chatgpt_reset = on_command(("chatgpt", "reset"), aliases={("chat", "reset")}, priority=1, block=True)
@@ -42,7 +38,6 @@ chatgpt_bill = on_command(("chatgpt", "bill"), aliases={("chat", "bill")}, prior
 chatgpt_help = on_command(("chatgpt", "help"), aliases={("chat", "help")}, priority=1, block=True)
 
 chat_instance = {}
-chat_setting = {}
 
 
 @chatgpt.handle(parameterless=[
@@ -58,7 +53,7 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
     if args_text == "":
         await chatgpt.finish(__plugin_meta__.usage)
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+        chat_instance[user_id] = Chat(user_id)
     chat_inst = chat_instance[user_id]
     await chat(matcher, chat_inst, args_text)
 
@@ -79,26 +74,11 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
     await chat(matcher, chat_inst, args_text)
 
 
-@chatgpt_setting.handle()
-async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
-    args_text = args.extract_plain_text()
-    user_id = event.user_id
-    if args_text == "":
-        chat_setting[user_id] = None
-        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
-        await chatgpt_setting.finish("清除设定完成")
-    else:
-        chat_setting[user_id] = args_text
-        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
-        chat_inst = chat_instance[user_id]
-        await chat(matcher, chat_inst, None)
-
-
 @chatgpt_len.handle()
 async def _(event: MessageEvent):
     user_id = event.user_id
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+        chat_instance[user_id] = Chat(user_id)
     chat_inst: Chat = chat_instance[user_id]
     await chatgpt_len.finish(f"当前对话长度为{chat_inst.history_len()}")
 
@@ -108,7 +88,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
     if user_id not in chat_instance:
-        chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+        chat_instance[user_id] = Chat(user_id)
     chat_inst: Chat = chat_instance[user_id]
     if args_text == "front":
         poped = chat_inst.pop_front()
@@ -129,7 +109,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 @chatgpt_reset.handle()
 async def _(event: MessageEvent):
     user_id = event.user_id
-    chat_instance[user_id] = Chat(user_id, chat_setting.get(user_id))
+    chat_instance[user_id] = Chat(user_id)
     await chatgpt_reset.finish("重置对话完成")
 
 

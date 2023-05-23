@@ -82,33 +82,12 @@ class ChatResult:
 
 
 class Chat:
-    def __init__(self, user: int, setting: str = None, model: str = chatgpt_config.klsa_chat_model):
+    def __init__(self, user: int, model: str = chatgpt_config.klsa_chat_model):
         self.user = user
-        self.setting = setting
-        self.respose_to_setting = None
         self.model = model
         self.messages = []
         self.create_time = time.time()
         self.lock = False
-
-    def _create_actual_message(self) -> list:
-        """
-        获得实际的消息列表，包含预设与对预设的回复
-        :return: 实际消息列表
-        """
-        result = []
-        if self.setting is not None:
-            result.append({
-                "role": "user",
-                "content": self.setting
-            })
-        if self.respose_to_setting is not None:
-            result.append({
-                "role": "assistant",
-                "content": self.respose_to_setting
-            })
-        result += self.messages
-        return result
 
     async def _request_api(self) -> dict:
         """
@@ -118,7 +97,7 @@ class Chat:
         api = chatgpt_config.klsa_chat_api_url
         data = {
             "model": self.model,
-            "messages": self._create_actual_message(),
+            "messages": self.messages,
         }
         headers = {
             "Authorization": "Bearer " + chatgpt_config.klsa_chat_api_key
@@ -185,7 +164,7 @@ class Chat:
         """
         return len(self.messages) // 2
 
-    async def chat(self, message: Optional[str]) -> ChatResult:
+    async def chat(self, message: str) -> ChatResult:
         """
         进行一次对话
         :param message: 用户的消息，若为None则代表进行预设初始化
@@ -200,12 +179,7 @@ class Chat:
         try:
             self.lock = True
 
-            if message is None:
-                if self.setting is None:
-                    chat_result.set_error("若要初始化预设，请先设定预设")
-                    raise
-            else:
-                self._append_user_message(message)
+            self._append_user_message(message)
 
             try:
                 resp = await self._request_api()
@@ -225,11 +199,6 @@ class Chat:
             if chat_result.is_poped():
                 self.pop_front()
 
-            # 如果为预设初始化，则设置预设回复
-            if message is None:
-                self.respose_to_setting = chat_result.get_content_str()
-            else:
-                self._append_assistant_message(chat_result.get_content_str())
         finally:
             self.lock = False
             return chat_result
