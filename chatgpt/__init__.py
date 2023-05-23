@@ -118,9 +118,9 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     chat_user: ChatUser = get_chat_user(user_id)
     res: Optional[ChatResult] = await chat_user.reset_instance(preset_idx)
     if res is None:
-        await chatgpt_reset.finish("重置对话完成")
+        await chatgpt_reset.finish("无预设重置对话完成")
     else:
-        await chatgpt_reset.finish(f"使用预设{preset_idx}重置对话完成：\n" + res.get_content_str())
+        await chatgpt_reset.finish(f"使用预设 {preset_idx} 重置对话完成：\n" + res.get_content_str())
 
 
 @chatgpt_bill.handle()
@@ -158,7 +158,7 @@ async def _(event: MessageEvent):
     preset_list = chat_user.get_presets()
     result = f"预设列表：\n{'=' * 25}\n"
     for i, preset in enumerate(preset_list):
-        result += f"{i}: {preset[:20]}\n{'=' * 25}\n"
+        result += f"{i}: {preset[:20]}{'...' if len(preset) > 20 else ''}\n{'=' * 25}\n"
     await chatgpt_preset.finish(result)
 
 
