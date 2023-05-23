@@ -14,7 +14,8 @@ __plugin_meta__ = PluginMetadata(
     usage="""指令: todo
 用法: todo [选项] <内容>
     空 - 显示帮助
-    add - 添加待办事项
+    add - 交互式添加待办
+    create <name>;<desc>;<date> - 指令式添加待办
     list [all] - 显示待办事项
     finish <tid> - 标记待办事项为完成
     del <tid> - 删除待办事项
@@ -29,6 +30,7 @@ __plugin_meta__ = PluginMetadata(
 
 todo = on_command("todo", priority=1, block=True)
 todo_add = on_command(("todo", "add"), priority=1, block=True)
+todo_create = on_command(("todo", "create"), priority=1, block=True)
 todo_list = on_command(("todo", "list"), priority=1, block=True)
 todo_finish = on_command(("todo", "finish"), priority=1, block=True)
 todo_del = on_command(("todo", "del"), priority=1, block=True)
@@ -52,6 +54,23 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], name
         return
 
     new_todo = Todo(name, description, timestamp)
+    if isinstance(event, GroupMessageEvent):
+        tid = await add_group(event.group_id, new_todo)
+    else:  # isinstance(event, PrivateMessageEvent)
+        tid = await add_private(event.user_id, new_todo)
+    await todo_add.finish(f"添加成功：{tid}")
+
+
+@todo_create.handle()
+async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], args: Message = CommandArg()):
+    args_text = args.extract_plain_text()
+    try:
+        [name, discription, date] = args_text.split(";", 2)
+        timestamp = int(time.mktime(time.strptime(date, "%Y/%m/%d %H:%M")))
+    except Exception as e:
+        await todo_create.finish("添加失败：\n" + str(e))
+        return
+    new_todo = Todo(name, discription, timestamp)
     if isinstance(event, GroupMessageEvent):
         tid = await add_group(event.group_id, new_todo)
     else:  # isinstance(event, PrivateMessageEvent)
