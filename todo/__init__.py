@@ -50,7 +50,7 @@ async def _(bot: Bot, event: Union[GroupMessageEvent, PrivateMessageEvent], name
     try:
         timestamp = int(time.mktime(time.strptime(timestr, "%Y/%m/%d %H:%M")))
     except Exception as e:
-        await todo_add.finish("添加失败：\n" + str(e))
+        await todo_add.reject_arg("timestr", "时间格式错误，请重试：\n" + str(e))
         return
 
     new_todo = Todo(name, description, timestamp)
