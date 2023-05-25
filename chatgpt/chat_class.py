@@ -95,7 +95,9 @@ class ChatInst:
         self.model = model
         self.messages = []
         self.create_time = time.time()
+        self.last_use_time = time.time()
         self.lock = False
+        self.preset_id = -1
         self.preset = []
 
     async def _request_api(self) -> dict:
@@ -136,6 +138,13 @@ class ChatInst:
             "role": "user",
             "content": message,
         })
+
+    def _refresh_last_use_time(self) -> None:
+        """
+        刷新最后使用时间
+        :return: 无
+        """
+        self.last_use_time = time.time()
 
     def get_message_list(self) -> list:
         """
@@ -180,7 +189,34 @@ class ChatInst:
         """
         return len(self.messages) // 2
 
-    async def init_preset(self, preset: str) -> ChatResult:
+    def get_creat_time(self) -> int:
+        """
+        获得创建时间
+        :return: 创建时间戳
+        """
+        return int(self.create_time)
+
+    def get_last_use_time(self) -> int:
+        """
+        获得最后使用时间
+        :return: 最后使用时间戳
+        """
+        return int(self.last_use_time)
+
+    def get_preset_id(self) -> int:
+        """
+        获得预设ID
+        :return: 预设ID
+        """
+        return self.preset_id
+
+    async def init_preset(self, preset_id: int, preset: str) -> ChatResult:
+        """
+        初始化预设
+        :param preset_id: 预设ID
+        :param preset: 预设内容
+        :return: 初始化结果
+        """
         chat_result = ChatResult()
 
         if self.lock:
@@ -194,6 +230,7 @@ class ChatInst:
 
         try:
             self.lock = True
+            self._refresh_last_use_time()
 
             try:
                 resp = await self._request_api()
@@ -213,6 +250,7 @@ class ChatInst:
                 "role": "assistant",
                 "content": chat_result.get_content_str(),
             })
+            self.preset_id = preset_id
 
         finally:
             self.lock = False
@@ -232,7 +270,7 @@ class ChatInst:
 
         try:
             self.lock = True
-
+            self._refresh_last_use_time()
             self._append_user_message(message)
 
             try:
@@ -285,7 +323,7 @@ class ChatUser:
         """
         self.instance = ChatInst(self.user)
         if 0 <= preset_idx < len(self.preset):
-            return await self.instance.init_preset(self.preset[preset_idx])
+            return await self.instance.init_preset(preset_idx, self.preset[preset_idx])
         return
 
     def add_presets(self, preset: str) -> None:
