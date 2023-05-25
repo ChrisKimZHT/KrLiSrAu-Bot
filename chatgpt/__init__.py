@@ -81,7 +81,13 @@ async def _(matcher: Matcher, event: MessageEvent, state: T_State, is_reset: Mes
     user_message = state["user_message"]
     user_id = event.user_id
     if is_reset == "Y" or is_reset == "y":
-        await get_chat_user(user_id).reset_instance()
+        preset_id = get_chat_user(user_id).get_instance().get_preset_id()
+        res: Optional[ChatResult] = await get_chat_user(user_id).reset_instance(preset_id)
+        if res is None:
+            await chatgpt_reset.finish("无预设重置对话完成")
+        else:
+            await chatgpt_reset.finish(f"使用预设 {preset_id} 重置对话完成：\n" + res.get_content_str())
+
     chat_inst: ChatInst = get_chat_user(user_id).get_instance()
     await chat(matcher, chat_inst, user_message)
 

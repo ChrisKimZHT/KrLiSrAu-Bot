@@ -97,6 +97,7 @@ class ChatInst:
         self.create_time = time.time()
         self.last_use_time = time.time()
         self.lock = False
+        self.preset_id = -1
         self.preset = []
 
     async def _request_api(self) -> dict:
@@ -202,9 +203,17 @@ class ChatInst:
         """
         return int(self.last_use_time)
 
-    async def init_preset(self, preset: str) -> ChatResult:
+    def get_preset_id(self) -> int:
+        """
+        获得预设ID
+        :return: 预设ID
+        """
+        return self.preset_id
+
+    async def init_preset(self, preset_id: int, preset: str) -> ChatResult:
         """
         初始化预设
+        :param preset_id: 预设ID
         :param preset: 预设内容
         :return: 初始化结果
         """
@@ -241,6 +250,7 @@ class ChatInst:
                 "role": "assistant",
                 "content": chat_result.get_content_str(),
             })
+            self.preset_id = preset_id
 
         finally:
             self.lock = False
@@ -313,7 +323,7 @@ class ChatUser:
         """
         self.instance = ChatInst(self.user)
         if 0 <= preset_idx < len(self.preset):
-            return await self.instance.init_preset(self.preset[preset_idx])
+            return await self.instance.init_preset(preset_idx, self.preset[preset_idx])
         return
 
     def add_presets(self, preset: str) -> None:
