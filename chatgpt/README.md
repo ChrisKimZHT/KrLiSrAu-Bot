@@ -27,6 +27,8 @@ chatgpt [选项] <内容>
 
 由于对话模型具有 token 上限（如 gpt-3.5-turbo 上限 4096 tokens），因此若对话长度超限，返回信息结尾将会提示：[!] 最早的一次对话被删除。
 
+可以配置 klsa_chat_timeout 来设置对话实例超时时间，若对话实例超时，会返回 `该对话上次使用时间为2023-05-25 13:07:41，是否重置？(Y/N)` 信息来提示用户。
+
 **示例：**`chat 你是谁`
 
 **结果：**
@@ -192,6 +194,7 @@ moyu
 | klsa_chat_api_key               | OpenAI Secret Key              | str   |                                                        |
 | klsa_chat_model                 | 使用的模型名称                 | str   | gpt-3.5-turbo                                          |
 | klsa_chat_token_limit           | token 限制                     | int   | 1024                                                   |
+| klsa_chat_timeout               | 对话实例超时限制/秒            | int   | 600                                                    |
 | klsa_chat_prompt_token_cost     | 每 1000 prompt tokens 费用     | float | -1                                                     |
 | klsa_chat_completion_token_cost | 每 1000 completion tokens 费用 | float | -1                                                     |
 | klsa_chat_cooldown              | 冷却时间                       | int   | 0                                                      |
