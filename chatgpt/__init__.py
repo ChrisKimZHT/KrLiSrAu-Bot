@@ -3,13 +3,16 @@ from nonebot.adapters.onebot.v11 import MessageEvent, PrivateMessageEvent, Group
 from nonebot.adapters.onebot.v11.helpers import Cooldown, CooldownIsolateLevel
 from nonebot.message import handle_event
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, ArgPlainText
 from nonebot.plugin import PluginMetadata
+from nonebot.typing import T_State
 from .config import chatgpt_config, Config
 from .chat_class import ChatInst, ChatUser, ChatResult
 from .usage_info import get_usage_info
 from .storage_manage import get_chat_user
 from typing import Optional, Union
+import datetime
+import time
 
 __plugin_meta__ = PluginMetadata(
     name="ChatGPT",
@@ -30,7 +33,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "2.3.0",
+        "version": "2.3.1",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -57,13 +60,30 @@ chatgpt_exec = on_command(("chatgpt", "exec"), aliases={("chat", "exec")}, prior
         isolate_level=CooldownIsolateLevel.USER
     )
 ])
-async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
+async def _(matcher: Matcher, event: MessageEvent, state: T_State, args: Message = CommandArg()):
     args_text = args.extract_plain_text()
     user_id = event.user_id
     if args_text == "":
         await chatgpt.finish(__plugin_meta__.usage)
     chat_inst: ChatInst = get_chat_user(user_id).get_instance()
+    time_now = int(time.time())
+    last_use_time = chat_inst.get_last_use_time()
+    last_use_timestr = datetime.datetime.fromtimestamp(last_use_time).strftime("%Y-%m-%d %H:%M:%S")
+    if time_now - last_use_time > chatgpt_config.klsa_chat_timeout:
+        await chatgpt.send(f"该对话上次使用时间为{last_use_timestr}，是否重置？(Y/N)")
+        state["user_message"] = args_text
+        await chatgpt.skip()
     await chat(matcher, chat_inst, args_text)
+
+
+@chatgpt.got("is_reset")
+async def _(matcher: Matcher, event: MessageEvent, state: T_State, is_reset: Message = ArgPlainText()):
+    user_message = state["user_message"]
+    user_id = event.user_id
+    if is_reset == "Y" or is_reset == "y":
+        await get_chat_user(user_id).reset_instance()
+    chat_inst: ChatInst = get_chat_user(user_id).get_instance()
+    await chat(matcher, chat_inst, user_message)
 
 
 @chatgpt_single.handle(parameterless=[

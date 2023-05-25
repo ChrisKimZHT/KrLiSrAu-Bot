@@ -95,6 +95,7 @@ class ChatInst:
         self.model = model
         self.messages = []
         self.create_time = time.time()
+        self.last_use_time = time.time()
         self.lock = False
         self.preset = []
 
@@ -136,6 +137,13 @@ class ChatInst:
             "role": "user",
             "content": message,
         })
+
+    def _refresh_last_use_time(self) -> None:
+        """
+        刷新最后使用时间
+        :return: 无
+        """
+        self.last_use_time = time.time()
 
     def get_message_list(self) -> list:
         """
@@ -180,7 +188,26 @@ class ChatInst:
         """
         return len(self.messages) // 2
 
+    def get_creat_time(self) -> int:
+        """
+        获得创建时间
+        :return: 创建时间戳
+        """
+        return int(self.create_time)
+
+    def get_last_use_time(self) -> int:
+        """
+        获得最后使用时间
+        :return: 最后使用时间戳
+        """
+        return int(self.last_use_time)
+
     async def init_preset(self, preset: str) -> ChatResult:
+        """
+        初始化预设
+        :param preset: 预设内容
+        :return: 初始化结果
+        """
         chat_result = ChatResult()
 
         if self.lock:
@@ -194,6 +221,7 @@ class ChatInst:
 
         try:
             self.lock = True
+            self._refresh_last_use_time()
 
             try:
                 resp = await self._request_api()
@@ -232,7 +260,7 @@ class ChatInst:
 
         try:
             self.lock = True
-
+            self._refresh_last_use_time()
             self._append_user_message(message)
 
             try:
