@@ -21,7 +21,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     extra={
         "authors": "ChrisKim",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -33,11 +33,17 @@ eb_stat = on_command(("eb", "stat"), priority=1, block=True)
 
 @eb.handle()
 async def _(matcher: Matcher, event: MessageEvent):
+    if not check_config():
+        await matcher.finish("未正确填写插件配置")
+        return
     await query(matcher)
 
 
 @eb_now.handle()
 async def _(matcher: Matcher, event: MessageEvent):
+    if not check_config():
+        await matcher.finish("未正确填写插件配置")
+        return
     await query(matcher)
 
 
@@ -58,6 +64,9 @@ async def query(matcher: Matcher):
 
 @eb_stat.handle()
 async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()):
+    if not check_config():
+        await matcher.finish("未正确填写插件配置")
+        return
     arg_text = args.extract_plain_text()
     if arg_text == "text":
         txt = stat_text()
@@ -69,4 +78,10 @@ async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg())
 
 @scheduler.scheduled_job("cron", id="update_stat", hour="12", minute="0", second="0")
 async def _():
+    if not check_config():
+        return
     await update_statistic()
+
+
+def check_config() -> bool:
+    return bool(len(whuteb_config.klsa_whuteb_account)) and bool(len(whuteb_config.klsa_whuteb_password))
