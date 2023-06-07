@@ -11,7 +11,7 @@ __plugin_meta__ = PluginMetadata(
 用法: cee <年份> - 查询指定年份高考倒计时""",
     extra={
         "authors": "ChrisKim",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "KrLiSrAu-Bot": True,
     }
 )
@@ -31,7 +31,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         if not (cee_year.isdigit() and len(cee_year) == 4 and 1 <= int(cee_year) <= 9999):  # 错误年份
             await cee.finish(MessageSegment.text("年份错误"))
 
-    time_delta = datetime.datetime.strptime(f"{cee_year}-06-07 08:00", "%Y-%m-%d %H:%M") - now_time
+    time_delta = datetime.datetime.strptime(f"{cee_year}-06-07 09:00", "%Y-%m-%d %H:%M") - now_time
     result = f"【高考倒计时】\n" \
              f"距离 {cee_year} 年高考还有：\n" \
              f"{time_delta.days} 天 {time_delta.seconds // 3600} 时 {time_delta.seconds % 3600 // 60} 分 {time_delta.seconds % 60} 秒"
