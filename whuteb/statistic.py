@@ -3,6 +3,7 @@ from .query_data import query_data
 import matplotlib.pyplot as plt
 import time
 from io import BytesIO
+from .config import whuteb_config
 
 
 async def update_statistic():
@@ -18,7 +19,7 @@ async def update_statistic():
 
 
 def stat_figure() -> BytesIO:
-    data_list: list = read_data()
+    data_list: list = read_data()[-whuteb_config.klsa_whuteb_history_count:]
 
     # 从数据列表中获取电费剩余量、当日用电量和对应的日期
     remain = [data["remain"] for data in data_list]
@@ -50,7 +51,7 @@ def stat_figure() -> BytesIO:
 
 def stat_text() -> str:
     result = ""
-    data_list: list = read_data()
+    data_list: list = read_data()[-whuteb_config.klsa_whuteb_history_count:]
     for data in data_list:
         result += f"{time.strftime('%m-%d', time.localtime(data['time']))} | {data['remain']} kW·h\n"
     return result

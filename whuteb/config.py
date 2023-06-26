@@ -11,6 +11,7 @@ class Config(BaseModel):
     klsa_whuteb_yujiatou_roomno: str = ""
     klsa_whuteb_yujiatou_factorycode: str = ""
     klsa_whuteb_yujiatou_area: str = ""
+    klsa_whuteb_history_count: int = 14
 
 
 driver = get_driver()
